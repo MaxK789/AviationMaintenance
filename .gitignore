@@ -1,5 +1,33 @@
-bin/
-obj/
+# --- Build Output (Результаты сборки) ---
+[Bb]in/
+[Oo]bj/
 /packages/
-riderModule.iml
-/_ReSharper.Caches/
+TestResults/
+
+# --- JetBrains Rider / IntelliJ (Настройки IDE) ---
+# Папка настроек проекта (обязательно игнорировать)
+.idea/
+# Временные файлы и кэши
+_ReSharper*/
+*.iml
+# Пользовательские настройки (не для команды)
+*.sln.DotSettings.User
+
+# --- Visual Studio (На случай, если кто-то откроет не в Rider) ---
+.vs/
+*.user
+*.suo
+*.userprefs
+
+# --- OS System Files (Мусор операционной системы) ---
+Thumbs.db
+.DS_Store
+
+# --- Logs & Crash Dumps (Логи) ---
+*.log
+*.dump
+
+# --- Sensitive Configs (Секреты) ---
+# Не заливайте локальные настройки с паролями!
+appsettings.Development.json
+.env
