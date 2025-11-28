@@ -1,0 +1,29 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# 
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{4247429A-69F9-4E5B-BAD2-C34BC85181D9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aviation.Maintenance.Domain", "src\Aviation.Maintenance.Domain\Aviation.Maintenance.Domain.csproj", "{FF62DC84-CD12-4787-BAAC-D714E44B2260}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aviation.Maintenance.Infrastructure", "src\Aviation.Maintenance.Infrastructure\Aviation.Maintenance.Infrastructure.csproj", "{261A1966-BE11-4C09-8FEF-380B1012301D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FF62DC84-CD12-4787-BAAC-D714E44B2260}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FF62DC84-CD12-4787-BAAC-D714E44B2260}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FF62DC84-CD12-4787-BAAC-D714E44B2260}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FF62DC84-CD12-4787-BAAC-D714E44B2260}.Release|Any CPU.Build.0 = Release|Any CPU
+		{261A1966-BE11-4C09-8FEF-380B1012301D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{261A1966-BE11-4C09-8FEF-380B1012301D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{261A1966-BE11-4C09-8FEF-380B1012301D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{261A1966-BE11-4C09-8FEF-380B1012301D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{FF62DC84-CD12-4787-BAAC-D714E44B2260} = {4247429A-69F9-4E5B-BAD2-C34BC85181D9}
+		{261A1966-BE11-4C09-8FEF-380B1012301D} = {4247429A-69F9-4E5B-BAD2-C34BC85181D9}
+	EndGlobalSection
+EndGlobal
