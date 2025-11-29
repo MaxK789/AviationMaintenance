@@ -14,11 +14,11 @@ public static class DependencyInjectionExtensions
         IConfiguration configuration)
     {
         var connectionString = configuration.GetConnectionString("Maintenance")
-                               ?? "Host=localhost;Port=5432;Database=maintenance;Username=postgres;Password=postgres";
+                               ?? "Data Source=AviationMaintenance.db";
 
         services.AddDbContext<MaintenanceDbContext>(options =>
         {
-            options.UseNpgsql(connectionString);
+            options.UseSqlite(connectionString);
         });
 
         services.AddScoped<IAircraftService, AircraftService>();
