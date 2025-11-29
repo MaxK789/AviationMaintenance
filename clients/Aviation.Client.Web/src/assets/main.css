@@ -1,0 +1,38 @@
+:root {
+  color-scheme: light;
+}
+
+body {
+  margin: 0;
+  background: #f3f4f6;
+}
+
+table {
+  font-size: 14px;
+}
+
+button {
+  border: 1px solid #d1d5db;
+  background: #e5e7eb;
+  border-radius: 4px;
+}
+
+input,
+select,
+textarea {
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  background: #fff;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5 {
+  margin: 0 0 8px;
+}
+
+p {
+  margin: 0;
+}
