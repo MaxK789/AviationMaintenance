@@ -1,0 +1,118 @@
+syntax = "proto3";
+
+option csharp_namespace = "Aviation.Maintenance.Grpc";
+
+package maintenance;
+
+import "google/protobuf/timestamp.proto";
+
+// ---------- ENUMS ----------
+
+enum WorkOrderStatus {
+  WORK_ORDER_STATUS_UNKNOWN = 0;
+  WORK_ORDER_STATUS_NEW = 1;
+  WORK_ORDER_STATUS_IN_PROGRESS = 2;
+  WORK_ORDER_STATUS_DONE = 3;
+  WORK_ORDER_STATUS_CANCELLED = 4;
+}
+
+enum WorkOrderPriority {
+  WORK_ORDER_PRIORITY_UNKNOWN = 0;
+  WORK_ORDER_PRIORITY_LOW = 1;
+  WORK_ORDER_PRIORITY_MEDIUM = 2;
+  WORK_ORDER_PRIORITY_HIGH = 3;
+}
+
+// ---------- MODELS ----------
+
+message WorkOrderModel {
+  int32 id = 1;
+  int32 aircraft_id = 2;
+
+  string title = 3;
+  string description = 4;
+
+  WorkOrderPriority priority = 5;
+  google.protobuf.Timestamp planned_start = 6;
+  google.protobuf.Timestamp planned_end = 7;
+
+  WorkOrderStatus status = 8;
+}
+
+// ---------- REQUESTS / RESPONSES ----------
+
+message GetWorkOrderRequest {
+  int32 id = 1;
+}
+
+message GetWorkOrderResponse {
+  WorkOrderModel work_order = 1;
+}
+
+message ListWorkOrdersRequest {
+  int32 aircraft_id = 1;          // 0 = не фильтровать
+  WorkOrderStatus status = 2;     // UNKNOWN = не фильтровать
+  WorkOrderPriority priority = 3; // UNKNOWN = не фильтровать
+}
+
+message ListWorkOrdersResponse {
+  repeated WorkOrderModel work_orders = 1;
+}
+
+message CreateWorkOrderRequest {
+  int32 aircraft_id = 1;
+
+  string title = 2;
+  string description = 3;
+
+  WorkOrderPriority priority = 4;
+  google.protobuf.Timestamp planned_start = 5;
+  google.protobuf.Timestamp planned_end = 6;
+}
+
+message CreateWorkOrderResponse {
+  WorkOrderModel work_order = 1;
+}
+
+message UpdateWorkOrderRequest {
+  int32 id = 1;
+
+  string title = 2;
+  string description = 3;
+
+  WorkOrderPriority priority = 4;
+  google.protobuf.Timestamp planned_start = 5;
+  google.protobuf.Timestamp planned_end = 6;
+}
+
+message UpdateWorkOrderResponse {
+  WorkOrderModel work_order = 1;
+}
+
+message ChangeWorkOrderStatusRequest {
+  int32 id = 1;
+  WorkOrderStatus new_status = 2;
+}
+
+message ChangeWorkOrderStatusResponse {
+  WorkOrderModel work_order = 1;
+}
+
+message DeleteWorkOrderRequest {
+  int32 id = 1;
+}
+
+message DeleteWorkOrderResponse {}
+
+// ---------- SERVICE ----------
+
+service WorkOrderService {
+  rpc GetWorkOrder (GetWorkOrderRequest) returns (GetWorkOrderResponse);
+  rpc ListWorkOrders (ListWorkOrdersRequest) returns (ListWorkOrdersResponse);
+
+  rpc CreateWorkOrder (CreateWorkOrderRequest) returns (CreateWorkOrderResponse);
+  rpc UpdateWorkOrder (UpdateWorkOrderRequest) returns (UpdateWorkOrderResponse);
+  rpc ChangeWorkOrderStatus (ChangeWorkOrderStatusRequest) returns (ChangeWorkOrderStatusResponse);
+
+  rpc DeleteWorkOrder (DeleteWorkOrderRequest) returns (DeleteWorkOrderResponse);
+}

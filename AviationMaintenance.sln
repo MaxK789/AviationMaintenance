@@ -6,18 +6,20 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "clients", "clients", "{9F65BFC9-072D-4D7C-987E-320849BEF7BA}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Aviation.Client.Web", "Aviation.Client.Web", "{A95A96D7-4C52-4A53-A5ED-361AED99F13D}"
-    ProjectSection(SolutionItems) = preProject
-        clients\Aviation.Client.Web\index.html = clients\Aviation.Client.Web\index.html
-        clients\Aviation.Client.Web\package-lock.json = clients\Aviation.Client.Web\package-lock.json
-        clients\Aviation.Client.Web\package.json = clients\Aviation.Client.Web\package.json
-        clients\Aviation.Client.Web\vite.config.js = clients\Aviation.Client.Web\vite.config.js
-    EndProjectSection
+	ProjectSection(SolutionItems) = preProject
+		clients\Aviation.Client.Web\index.html = clients\Aviation.Client.Web\index.html
+		clients\Aviation.Client.Web\package-lock.json = clients\Aviation.Client.Web\package-lock.json
+		clients\Aviation.Client.Web\package.json = clients\Aviation.Client.Web\package.json
+		clients\Aviation.Client.Web\vite.config.js = clients\Aviation.Client.Web\vite.config.js
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aviation.Maintenance.Domain", "src\Aviation.Maintenance.Domain\Aviation.Maintenance.Domain.csproj", "{FF62DC84-CD12-4787-BAAC-D714E44B2260}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aviation.Maintenance.Infrastructure", "src\Aviation.Maintenance.Infrastructure\Aviation.Maintenance.Infrastructure.csproj", "{261A1966-BE11-4C09-8FEF-380B1012301D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aviation.WebApi", "src\Aviation.WebApi\Aviation.WebApi.csproj", "{72242E34-FBB3-4660-8F8B-C017A32E83C7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aviation.Maintenance.Grpc", "src\Aviation.Maintenance.Grpc\Aviation.Maintenance.Grpc.csproj", "{270A9F1A-3557-45A0-9763-7BA452FDE28B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -34,14 +36,19 @@ Global
 		{261A1966-BE11-4C09-8FEF-380B1012301D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{261A1966-BE11-4C09-8FEF-380B1012301D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{72242E34-FBB3-4660-8F8B-C017A32E83C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-                {72242E34-FBB3-4660-8F8B-C017A32E83C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
-                {72242E34-FBB3-4660-8F8B-C017A32E83C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
-                {72242E34-FBB3-4660-8F8B-C017A32E83C7}.Release|Any CPU.Build.0 = Release|Any CPU
-        EndGlobalSection
-        GlobalSection(NestedProjects) = preSolution
-                {A95A96D7-4C52-4A53-A5ED-361AED99F13D} = {9F65BFC9-072D-4D7C-987E-320849BEF7BA}
-                {FF62DC84-CD12-4787-BAAC-D714E44B2260} = {4247429A-69F9-4E5B-BAD2-C34BC85181D9}
-                {261A1966-BE11-4C09-8FEF-380B1012301D} = {4247429A-69F9-4E5B-BAD2-C34BC85181D9}
-                {72242E34-FBB3-4660-8F8B-C017A32E83C7} = {4247429A-69F9-4E5B-BAD2-C34BC85181D9}
+		{72242E34-FBB3-4660-8F8B-C017A32E83C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{72242E34-FBB3-4660-8F8B-C017A32E83C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{72242E34-FBB3-4660-8F8B-C017A32E83C7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{270A9F1A-3557-45A0-9763-7BA452FDE28B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{270A9F1A-3557-45A0-9763-7BA452FDE28B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{270A9F1A-3557-45A0-9763-7BA452FDE28B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{270A9F1A-3557-45A0-9763-7BA452FDE28B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A95A96D7-4C52-4A53-A5ED-361AED99F13D} = {9F65BFC9-072D-4D7C-987E-320849BEF7BA}
+		{FF62DC84-CD12-4787-BAAC-D714E44B2260} = {4247429A-69F9-4E5B-BAD2-C34BC85181D9}
+		{261A1966-BE11-4C09-8FEF-380B1012301D} = {4247429A-69F9-4E5B-BAD2-C34BC85181D9}
+		{72242E34-FBB3-4660-8F8B-C017A32E83C7} = {4247429A-69F9-4E5B-BAD2-C34BC85181D9}
+		{270A9F1A-3557-45A0-9763-7BA452FDE28B} = {4247429A-69F9-4E5B-BAD2-C34BC85181D9}
 	EndGlobalSection
 EndGlobal
