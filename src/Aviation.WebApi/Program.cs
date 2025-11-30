@@ -1,6 +1,7 @@
 using System.Text.Json.Serialization;
 using Aviation.Maintenance.Infrastructure.Extensions;
 using Aviation.WebApi.Hubs;
+using Aviation.Maintenance.Grpc;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +18,14 @@ builder.Services
 
 // SignalR
 builder.Services.AddSignalR();
+
+builder.Services.AddGrpcClient<WorkOrderService.WorkOrderServiceClient>(o =>
+{
+    // ВАЖНО: сюда подставь адрес, который пишет консоль при запуске Aviation.Maintenance.Grpc
+    // пример:
+    // o.Address = new Uri("https://localhost:7120");
+    o.Address = new Uri("https://localhost:7120");
+});
 
 // Swagger (удобно для теста ЛР1)
 builder.Services.AddEndpointsApiExplorer();
