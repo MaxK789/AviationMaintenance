@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using Aviation.Maintenance.Infrastructure.Extensions;
+using Aviation.WebApi.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +14,9 @@ builder.Services
     {
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     });
+
+// SignalR
+builder.Services.AddSignalR();
 
 // Swagger (удобно для теста ЛР1)
 builder.Services.AddEndpointsApiExplorer();
@@ -32,5 +36,8 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+// Хаб для ЛР2
+app.MapHub<MaintenanceHub>("/hubs/maintenance");
 
 app.Run();

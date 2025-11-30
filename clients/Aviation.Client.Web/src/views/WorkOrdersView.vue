@@ -7,6 +7,12 @@ import {
   changeWorkOrderStatus,
   deleteWorkOrder
 } from '../services/workOrderService'
+import {
+  startConnection,
+  onWorkOrderCreated,
+  onWorkOrderUpdated,
+  onWorkOrderDeleted
+} from '../signalr/maintenanceHub'
 
 const aircraft = ref([])
 const workOrders = ref([])
@@ -114,7 +120,27 @@ async function remove(id) {
   }
 }
 
-onMounted(loadInitial)
+onMounted(async () => {
+  await loadInitial()
+
+  try {
+    await startConnection()
+
+    // На любое событие просто перезагружаем список.
+    // Это проще, чем вручную патчить массив.
+    onWorkOrderCreated(async () => {
+      await loadWorkOrders()
+    })
+    onWorkOrderUpdated(async () => {
+      await loadWorkOrders()
+    })
+    onWorkOrderDeleted(async () => {
+      await loadWorkOrders()
+    })
+  } catch (e) {
+    console.error('SignalR connection failed', e)
+  }
+})
 </script>
 
 <template>
