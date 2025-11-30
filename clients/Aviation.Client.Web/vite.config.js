@@ -13,6 +13,12 @@ export default defineConfig({
         target: API_TARGET,
         changeOrigin: true,
         secure: false
+      },
+      '/hubs': {
+        target: API_TARGET,
+        changeOrigin: true,
+        secure: false,
+        ws: true
       }
     }
   }
