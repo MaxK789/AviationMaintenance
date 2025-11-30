@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aviation.WebApi", "src\Avia
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aviation.Maintenance.Grpc", "src\Aviation.Maintenance.Grpc\Aviation.Maintenance.Grpc.csproj", "{270A9F1A-3557-45A0-9763-7BA452FDE28B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aviation.Client.Console", "clients\Aviation.Client.Console\Aviation.Client.Console.csproj", "{ADFB78DE-0433-4359-81A3-8A39C369841C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -43,6 +45,10 @@ Global
 		{270A9F1A-3557-45A0-9763-7BA452FDE28B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{270A9F1A-3557-45A0-9763-7BA452FDE28B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{270A9F1A-3557-45A0-9763-7BA452FDE28B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ADFB78DE-0433-4359-81A3-8A39C369841C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ADFB78DE-0433-4359-81A3-8A39C369841C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ADFB78DE-0433-4359-81A3-8A39C369841C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ADFB78DE-0433-4359-81A3-8A39C369841C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{A95A96D7-4C52-4A53-A5ED-361AED99F13D} = {9F65BFC9-072D-4D7C-987E-320849BEF7BA}
@@ -50,5 +56,6 @@ Global
 		{261A1966-BE11-4C09-8FEF-380B1012301D} = {4247429A-69F9-4E5B-BAD2-C34BC85181D9}
 		{72242E34-FBB3-4660-8F8B-C017A32E83C7} = {4247429A-69F9-4E5B-BAD2-C34BC85181D9}
 		{270A9F1A-3557-45A0-9763-7BA452FDE28B} = {4247429A-69F9-4E5B-BAD2-C34BC85181D9}
+		{ADFB78DE-0433-4359-81A3-8A39C369841C} = {9F65BFC9-072D-4D7C-987E-320849BEF7BA}
 	EndGlobalSection
 EndGlobal
