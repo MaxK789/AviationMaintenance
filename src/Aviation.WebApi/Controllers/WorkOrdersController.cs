@@ -1,7 +1,9 @@
 using Aviation.Maintenance.Domain.Enums;
 using Aviation.Maintenance.Domain.Interfaces;
 using Aviation.WebApi.Dtos;
+using Aviation.WebApi.Hubs;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 
 namespace Aviation.WebApi.Controllers;
 
@@ -10,11 +12,32 @@ namespace Aviation.WebApi.Controllers;
 public class WorkOrdersController : ControllerBase
 {
     private readonly IWorkOrderService _workOrderService;
+    private readonly IHubContext<MaintenanceHub> _hubContext;
 
-    public WorkOrdersController(IWorkOrderService workOrderService)
+    private const string DispatchersGroup = "dispatchers";
+
+    public WorkOrdersController(
+        IWorkOrderService workOrderService,
+        IHubContext<MaintenanceHub> hubContext)
     {
         _workOrderService = workOrderService;
+        _hubContext = hubContext;
     }
+
+    private Task NotifyCreated(WorkOrderDto dto, CancellationToken ct) =>
+        _hubContext.Clients
+            .Group(DispatchersGroup)
+            .SendAsync("WorkOrderCreated", dto, ct);
+
+    private Task NotifyUpdated(WorkOrderDto dto, CancellationToken ct) =>
+        _hubContext.Clients
+            .Group(DispatchersGroup)
+            .SendAsync("WorkOrderUpdated", dto, ct);
+
+    private Task NotifyDeleted(int id, CancellationToken ct) =>
+        _hubContext.Clients
+            .Group(DispatchersGroup)
+            .SendAsync("WorkOrderDeleted", id, ct);
 
     // GET /api/workorders?aircraftId=1&status=InProgress&priority=High
     [HttpGet]
@@ -103,6 +126,7 @@ public class WorkOrdersController : ControllerBase
             Status = w.Status
         };
 
+        await NotifyCreated(dto, ct);
         return CreatedAtAction(nameof(GetById), new { id = dto.Id }, dto);
     }
 
@@ -140,6 +164,7 @@ public class WorkOrdersController : ControllerBase
                 Status = w.Status
             };
 
+            await NotifyUpdated(dto, ct);
             return Ok(dto);
         }
         catch (InvalidOperationException)
@@ -178,6 +203,7 @@ public class WorkOrdersController : ControllerBase
                 Status = w.Status
             };
 
+            await NotifyUpdated(dto, ct);
             return Ok(dto);
         }
         catch (InvalidOperationException)
@@ -191,6 +217,7 @@ public class WorkOrdersController : ControllerBase
     public async Task<IActionResult> Delete(int id, CancellationToken ct)
     {
         await _workOrderService.DeleteAsync(id, ct);
+        await NotifyDeleted(id, ct);
         return NoContent();
     }
 }
