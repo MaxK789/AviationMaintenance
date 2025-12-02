@@ -49,18 +49,11 @@ class Program
 
     private static async Task ListWorkOrders(WorkOrderService.WorkOrderServiceClient client)
     {
-        try
+        var response = await client.ListWorkOrdersAsync(new ListWorkOrdersRequest());
+        Console.WriteLine($"Total: {response.WorkOrders.Count}");
+        foreach (var w in response.WorkOrders)
         {
-            var response = await client.ListWorkOrdersAsync(new ListWorkOrdersRequest());
-            Console.WriteLine($"Total: {response.WorkOrders.Count}");
-            foreach (var w in response.WorkOrders)
-            {
-                Console.WriteLine($"{w.Id}: AC={w.AircraftId}, {w.Title} [{w.Status}]");
-            }
-        }
-        catch (Grpc.Core.RpcException ex)
-        {
-            Console.WriteLine($"gRPC error: {ex.StatusCode} - {ex.Status.Detail}");
+            Console.WriteLine($"{w.Id}: AC={w.AircraftId}, {w.Title} [{w.Status}]");
         }
     }
 
@@ -88,15 +81,8 @@ class Program
             PlannedStart = Google.Protobuf.WellKnownTypes.Timestamp.FromDateTime(DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc))
         };
 
-        try
-        {
-            var response = await client.CreateWorkOrderAsync(request);
-            Console.WriteLine($"Created work order with id: {response.WorkOrder.Id}");
-        }
-        catch (Grpc.Core.RpcException ex)
-        {
-            Console.WriteLine($"gRPC error: {ex.StatusCode} - {ex.Status.Detail}");
-        }
+        var response = await client.CreateWorkOrderAsync(request);
+        Console.WriteLine($"Created work order with id: {response.WorkOrder.Id}");
     }
 
     private static async Task ChangeStatus(WorkOrderService.WorkOrderServiceClient client)
@@ -133,15 +119,8 @@ class Program
             NewStatus = status
         };
 
-        try
-        {
-            await client.ChangeWorkOrderStatusAsync(request);
-            Console.WriteLine("Status changed");
-        }
-        catch (Grpc.Core.RpcException ex)
-        {
-            Console.WriteLine($"gRPC error: {ex.StatusCode} - {ex.Status.Detail}");
-        }
+        await client.ChangeWorkOrderStatusAsync(request);
+        Console.WriteLine("Status changed");
     }
 
     private static async Task DeleteWorkOrder(WorkOrderService.WorkOrderServiceClient client)
@@ -154,14 +133,7 @@ class Program
             return;
         }
 
-        try
-        {
-            await client.DeleteWorkOrderAsync(new DeleteWorkOrderRequest { Id = id });
-            Console.WriteLine("Deleted");
-        }
-        catch (Grpc.Core.RpcException ex)
-        {
-            Console.WriteLine($"gRPC error: {ex.StatusCode} - {ex.Status.Detail}");
-        }
+        await client.DeleteWorkOrderAsync(new DeleteWorkOrderRequest { Id = id });
+        Console.WriteLine("Deleted");
     }
 }
