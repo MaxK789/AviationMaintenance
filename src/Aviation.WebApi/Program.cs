@@ -24,7 +24,7 @@ builder.Services.AddGrpcClient<WorkOrderService.WorkOrderServiceClient>(o =>
     // ВАЖНО: сюда подставь адрес, который пишет консоль при запуске Aviation.Maintenance.Grpc
     // пример:
     // o.Address = new Uri("https://localhost:7120");
-    o.Address = new Uri("https://localhost:7120");
+    o.Address = new Uri("http://localhost:5004");
 });
 
 // Swagger (удобно для теста ЛР1)
