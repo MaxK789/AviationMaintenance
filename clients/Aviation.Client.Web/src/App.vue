@@ -5,6 +5,7 @@
       <nav>
         <router-link to="/aircraft">Самолёты</router-link>
         <router-link to="/workorders">Заявки</router-link>
+        <router-link to="/graphql">GraphQL</router-link>
       </nav>
     </header>
 
