@@ -47,5 +47,7 @@ public class UpdateWorkOrderRequest
 
 public class ChangeWorkOrderStatusRequest
 {
+    public int Id { get; set; }
+
     public WorkOrderStatus NewStatus { get; set; }
 }

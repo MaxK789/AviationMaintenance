@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using Aviation.Maintenance.Infrastructure.Extensions;
+using Aviation.WebApi.GraphQL;
 using Aviation.WebApi.Hubs;
 using Aviation.Maintenance.Grpc;
 
@@ -27,6 +28,11 @@ builder.Services.AddGrpcClient<WorkOrderService.WorkOrderServiceClient>(o =>
     o.Address = new Uri("http://localhost:5004");
 });
 
+builder.Services
+    .AddGraphQLServer()
+    .AddQueryType<RootQuery>()
+    .AddMutationType<RootMutation>();
+
 // Swagger (удобно для теста ЛР1)
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -48,5 +54,7 @@ app.MapControllers();
 
 // Хаб для ЛР2
 app.MapHub<MaintenanceHub>("/hubs/maintenance");
+
+app.MapGraphQL("/graphql");
 
 app.Run();
