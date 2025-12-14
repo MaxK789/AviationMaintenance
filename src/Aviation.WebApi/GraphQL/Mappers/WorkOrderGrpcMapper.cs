@@ -1,11 +1,14 @@
-using Aviation.Maintenance.Domain.Enums;
 using Aviation.WebApi.GraphQL.Types;
 using Google.Protobuf.WellKnownTypes;
-using maintenance;
+
+using Grpc = Aviation.Maintenance.Grpc;
+using WorkOrderModel = Aviation.Maintenance.Grpc.WorkOrderModel;
+
 using DomainStatus = Aviation.Maintenance.Domain.Enums.WorkOrderStatus;
 using DomainPriority = Aviation.Maintenance.Domain.Enums.WorkOrderPriority;
-using ProtoStatus = maintenance.WorkOrderStatus;
-using ProtoPriority = maintenance.WorkOrderPriority;
+
+using ProtoStatus = Aviation.Maintenance.Grpc.WorkOrderStatus;
+using ProtoPriority = Aviation.Maintenance.Grpc.WorkOrderPriority;
 
 namespace Aviation.WebApi.GraphQL.Mappers;
 

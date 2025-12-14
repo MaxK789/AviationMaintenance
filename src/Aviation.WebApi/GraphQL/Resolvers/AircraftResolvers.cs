@@ -2,7 +2,10 @@ using Aviation.Maintenance.Domain.Enums;
 using Aviation.WebApi.GraphQL.Mappers;
 using Aviation.WebApi.GraphQL.Types;
 using HotChocolate;
-using maintenance;
+
+using Grpc = Aviation.Maintenance.Grpc;
+using ProtoStatus = Aviation.Maintenance.Grpc.WorkOrderStatus;
+using ProtoPriority = Aviation.Maintenance.Grpc.WorkOrderPriority;
 
 namespace Aviation.WebApi.GraphQL.Resolvers;
 
@@ -14,14 +17,14 @@ public class AircraftResolvers
         [Parent] AircraftGql parent,
         WorkOrderStatus? status,
         WorkOrderPriority? priority,
-        [Service] WorkOrderService.WorkOrderServiceClient grpc,
+        [Service] Grpc.WorkOrderService.WorkOrderServiceClient grpc,
         CancellationToken ct)
     {
-        var req = new ListWorkOrdersRequest
+        var req = new Grpc.ListWorkOrdersRequest
         {
             AircraftId = parent.Id,
-            Status = status is null ? maintenance.WorkOrderStatus.WorkOrderStatusUnknown : WorkOrderGrpcMapper.ToProtoStatus(status.Value),
-            Priority = priority is null ? maintenance.WorkOrderPriority.WorkOrderPriorityUnknown : WorkOrderGrpcMapper.ToProtoPriority(priority.Value)
+            Status = status is null ? ProtoStatus.WorkOrderStatusUnknown : WorkOrderGrpcMapper.ToProtoStatus(status.Value),
+            Priority = priority is null ? ProtoPriority.WorkOrderPriorityUnknown : WorkOrderGrpcMapper.ToProtoPriority(priority.Value)
         };
 
         var res = await grpc.ListWorkOrdersAsync(req, cancellationToken: ct);

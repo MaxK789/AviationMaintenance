@@ -3,8 +3,10 @@ using Aviation.Maintenance.Domain.Interfaces;
 using Aviation.WebApi.GraphQL.Inputs;
 using Aviation.WebApi.GraphQL.Mappers;
 using Aviation.WebApi.GraphQL.Types;
-using HotChocolate;
-using maintenance;
+
+using Grpc = Aviation.Maintenance.Grpc;
+using ProtoStatus = Aviation.Maintenance.Grpc.WorkOrderStatus;
+using ProtoPriority = Aviation.Maintenance.Grpc.WorkOrderPriority;
 
 namespace Aviation.WebApi.GraphQL;
 
@@ -43,19 +45,18 @@ public class Query
         };
     }
 
-    // Пагинация "по-графкьюэльному" (offset paging) + filter input
     public async Task<WorkOrdersPage> GetWorkOrdersPage(
         WorkOrderFilterInput? filter,
+        [Service] Grpc.WorkOrderService.WorkOrderServiceClient grpc,
         int skip = 0,
         int take = 20,
-        [Service] WorkOrderService.WorkOrderServiceClient grpc,
         CancellationToken ct = default)
     {
-        var request = new ListWorkOrdersRequest
+        var request = new Grpc.ListWorkOrdersRequest
         {
             AircraftId = filter?.AircraftId ?? 0,
-            Status = filter?.Status is null ? WorkOrderStatus.WorkOrderStatusUnknown : WorkOrderGrpcMapper.ToProtoStatus(filter.Status.Value),
-            Priority = filter?.Priority is null ? WorkOrderPriority.WorkOrderPriorityUnknown : WorkOrderGrpcMapper.ToProtoPriority(filter.Priority.Value)
+            Status = filter?.Status is null ? ProtoStatus.WorkOrderStatusUnknown : WorkOrderGrpcMapper.ToProtoStatus(filter.Status.Value),
+            Priority = filter?.Priority is null ? ProtoPriority.WorkOrderPriorityUnknown : WorkOrderGrpcMapper.ToProtoPriority(filter.Priority.Value)
         };
 
         var response = await grpc.ListWorkOrdersAsync(request, cancellationToken: ct);
