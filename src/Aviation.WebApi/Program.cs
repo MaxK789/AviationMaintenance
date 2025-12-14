@@ -16,8 +16,8 @@ builder.Services.AddMaintenanceInfrastructure(builder.Configuration);
 builder.Services.AddPooledDbContextFactory<MaintenanceDbContext>(options =>
 {
     var cs = builder.Configuration.GetConnectionString("Maintenance")
-             ?? "Host=localhost;Port=5432;Database=maintenance;Username=postgres;Password=postgres";
-    options.UseNpgsql(cs);
+             ?? "Data Source=AviationMaintenance.db";
+    options.UseSqlite(cs);
 });
 
 // Добавляем контроллеры и делаем enum'ы строками в JSON

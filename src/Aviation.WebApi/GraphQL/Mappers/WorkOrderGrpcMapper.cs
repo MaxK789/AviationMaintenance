@@ -28,38 +28,38 @@ public static class WorkOrderGrpcMapper
     public static ProtoStatus ToProtoStatus(DomainStatus status) =>
         status switch
         {
-            DomainStatus.New => ProtoStatus.WorkOrderStatusNew,
-            DomainStatus.InProgress => ProtoStatus.WorkOrderStatusInProgress,
-            DomainStatus.Done => ProtoStatus.WorkOrderStatusDone,
-            DomainStatus.Cancelled => ProtoStatus.WorkOrderStatusCancelled,
-            _ => ProtoStatus.WorkOrderStatusUnknown
+            DomainStatus.New => ProtoStatus.New,
+            DomainStatus.InProgress => ProtoStatus.InProgress,
+            DomainStatus.Done => ProtoStatus.Done,
+            DomainStatus.Cancelled => ProtoStatus.Cancelled,
+            _ => ProtoStatus.Unknown
         };
 
     public static ProtoPriority ToProtoPriority(DomainPriority priority) =>
         priority switch
         {
-            DomainPriority.Low => ProtoPriority.WorkOrderPriorityLow,
-            DomainPriority.Medium => ProtoPriority.WorkOrderPriorityMedium,
-            DomainPriority.High => ProtoPriority.WorkOrderPriorityHigh,
-            _ => ProtoPriority.WorkOrderPriorityUnknown
+            DomainPriority.Low => ProtoPriority.Low,
+            DomainPriority.Medium => ProtoPriority.Medium,
+            DomainPriority.High => ProtoPriority.High,
+            _ => ProtoPriority.Unknown
         };
 
     private static DomainStatus ToDomainStatus(ProtoStatus status) =>
         status switch
         {
-            ProtoStatus.WorkOrderStatusNew => DomainStatus.New,
-            ProtoStatus.WorkOrderStatusInProgress => DomainStatus.InProgress,
-            ProtoStatus.WorkOrderStatusDone => DomainStatus.Done,
-            ProtoStatus.WorkOrderStatusCancelled => DomainStatus.Cancelled,
+            ProtoStatus.New => DomainStatus.New,
+            ProtoStatus.InProgress => DomainStatus.InProgress,
+            ProtoStatus.Done => DomainStatus.Done,
+            ProtoStatus.Cancelled => DomainStatus.Cancelled,
             _ => DomainStatus.New
         };
 
     private static DomainPriority ToDomainPriority(ProtoPriority priority) =>
         priority switch
         {
-            ProtoPriority.WorkOrderPriorityLow => DomainPriority.Low,
-            ProtoPriority.WorkOrderPriorityMedium => DomainPriority.Medium,
-            ProtoPriority.WorkOrderPriorityHigh => DomainPriority.High,
+            ProtoPriority.Low => DomainPriority.Low,
+            ProtoPriority.Medium => DomainPriority.Medium,
+            ProtoPriority.High => DomainPriority.High,
             _ => DomainPriority.Medium
         };
 

@@ -55,8 +55,8 @@ public class Query
         var request = new MaintenanceGrpc.ListWorkOrdersRequest
         {
             AircraftId = filter?.AircraftId ?? 0,
-            Status = filter?.Status is null ? ProtoStatus.WorkOrderStatusUnknown : WorkOrderGrpcMapper.ToProtoStatus(filter.Status.Value),
-            Priority = filter?.Priority is null ? ProtoPriority.WorkOrderPriorityUnknown : WorkOrderGrpcMapper.ToProtoPriority(filter.Priority.Value)
+            Status = filter?.Status is null ? ProtoStatus.Unknown : WorkOrderGrpcMapper.ToProtoStatus(filter.Status.Value),
+            Priority = filter?.Priority is null ? ProtoPriority.Unknown : WorkOrderGrpcMapper.ToProtoPriority(filter.Priority.Value)
         };
 
         var response = await grpc.ListWorkOrdersAsync(request, cancellationToken: ct);

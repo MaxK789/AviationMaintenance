@@ -23,8 +23,8 @@ public class AircraftResolvers
         var req = new MaintenanceGrpc.ListWorkOrdersRequest
         {
             AircraftId = parent.Id,
-            Status = status is null ? ProtoStatus.WorkOrderStatusUnknown : WorkOrderGrpcMapper.ToProtoStatus(status.Value),
-            Priority = priority is null ? ProtoPriority.WorkOrderPriorityUnknown : WorkOrderGrpcMapper.ToProtoPriority(priority.Value)
+            Status = status is null ? ProtoStatus.Unknown : WorkOrderGrpcMapper.ToProtoStatus(status.Value),
+            Priority = priority is null ? ProtoPriority.Unknown : WorkOrderGrpcMapper.ToProtoPriority(priority.Value)
         };
 
         var res = await grpc.ListWorkOrdersAsync(req, cancellationToken: ct);
