@@ -1,0 +1,74 @@
+using Aviation.Maintenance.Domain.Enums;
+using Aviation.WebApi.GraphQL.Types;
+using Google.Protobuf.WellKnownTypes;
+using maintenance;
+using DomainStatus = Aviation.Maintenance.Domain.Enums.WorkOrderStatus;
+using DomainPriority = Aviation.Maintenance.Domain.Enums.WorkOrderPriority;
+using ProtoStatus = maintenance.WorkOrderStatus;
+using ProtoPriority = maintenance.WorkOrderPriority;
+
+namespace Aviation.WebApi.GraphQL.Mappers;
+
+public static class WorkOrderGrpcMapper
+{
+    public static WorkOrderGql ToGql(this WorkOrderModel model) => new()
+    {
+        Id = model.Id,
+        AircraftId = model.AircraftId,
+        Title = model.Title,
+        Description = string.IsNullOrWhiteSpace(model.Description) ? null : model.Description,
+        Priority = ToDomainPriority(model.Priority),
+        PlannedStart = ToNullableDateTime(model.PlannedStart),
+        PlannedEnd = ToNullableDateTime(model.PlannedEnd),
+        Status = ToDomainStatus(model.Status)
+    };
+
+    public static ProtoStatus ToProtoStatus(DomainStatus status) =>
+        status switch
+        {
+            DomainStatus.New => ProtoStatus.WorkOrderStatusNew,
+            DomainStatus.InProgress => ProtoStatus.WorkOrderStatusInProgress,
+            DomainStatus.Done => ProtoStatus.WorkOrderStatusDone,
+            DomainStatus.Cancelled => ProtoStatus.WorkOrderStatusCancelled,
+            _ => ProtoStatus.WorkOrderStatusUnknown
+        };
+
+    public static ProtoPriority ToProtoPriority(DomainPriority priority) =>
+        priority switch
+        {
+            DomainPriority.Low => ProtoPriority.WorkOrderPriorityLow,
+            DomainPriority.Medium => ProtoPriority.WorkOrderPriorityMedium,
+            DomainPriority.High => ProtoPriority.WorkOrderPriorityHigh,
+            _ => ProtoPriority.WorkOrderPriorityUnknown
+        };
+
+    private static DomainStatus ToDomainStatus(ProtoStatus status) =>
+        status switch
+        {
+            ProtoStatus.WorkOrderStatusNew => DomainStatus.New,
+            ProtoStatus.WorkOrderStatusInProgress => DomainStatus.InProgress,
+            ProtoStatus.WorkOrderStatusDone => DomainStatus.Done,
+            ProtoStatus.WorkOrderStatusCancelled => DomainStatus.Cancelled,
+            _ => DomainStatus.New
+        };
+
+    private static DomainPriority ToDomainPriority(ProtoPriority priority) =>
+        priority switch
+        {
+            ProtoPriority.WorkOrderPriorityLow => DomainPriority.Low,
+            ProtoPriority.WorkOrderPriorityMedium => DomainPriority.Medium,
+            ProtoPriority.WorkOrderPriorityHigh => DomainPriority.High,
+            _ => DomainPriority.Medium
+        };
+
+    public static Timestamp FromNullableDateTime(DateTime? dt) =>
+        dt.HasValue
+            ? Timestamp.FromDateTime(DateTime.SpecifyKind(dt.Value, DateTimeKind.Utc))
+            : Timestamp.FromDateTime(DateTime.SpecifyKind(DateTime.UnixEpoch, DateTimeKind.Utc));
+
+    private static DateTime? ToNullableDateTime(Timestamp ts)
+    {
+        var dt = ts.ToDateTime();
+        return dt == DateTime.UnixEpoch ? (DateTime?)null : dt;
+    }
+}

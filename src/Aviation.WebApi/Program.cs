@@ -1,13 +1,24 @@
 using System.Text.Json.Serialization;
+using Aviation.Maintenance.Grpc;
+using Aviation.Maintenance.Infrastructure.Data;
 using Aviation.Maintenance.Infrastructure.Extensions;
 using Aviation.WebApi.GraphQL;
+using Aviation.WebApi.GraphQL.Loaders;
+using Aviation.WebApi.GraphQL.Resolvers;
 using Aviation.WebApi.Hubs;
-using Aviation.Maintenance.Grpc;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Подключаем нашу инфраструктуру (DbContext + сервисы)
 builder.Services.AddMaintenanceInfrastructure(builder.Configuration);
+
+builder.Services.AddPooledDbContextFactory<MaintenanceDbContext>(options =>
+{
+    var cs = builder.Configuration.GetConnectionString("Maintenance")
+             ?? "Host=localhost;Port=5432;Database=maintenance;Username=postgres;Password=postgres";
+    options.UseNpgsql(cs);
+});
 
 // Добавляем контроллеры и делаем enum'ы строками в JSON
 builder.Services
@@ -30,8 +41,11 @@ builder.Services.AddGrpcClient<WorkOrderService.WorkOrderServiceClient>(o =>
 
 builder.Services
     .AddGraphQLServer()
-    .AddQueryType<RootQuery>()
-    .AddMutationType<RootMutation>();
+    .AddQueryType<Query>()
+    .AddMutationType<Mutation>()
+    .AddTypeExtension<WorkOrderResolvers>()
+    .AddTypeExtension<AircraftResolvers>()
+    .AddDataLoader<AircraftByIdDataLoader>();
 
 // Swagger (удобно для теста ЛР1)
 builder.Services.AddEndpointsApiExplorer();
