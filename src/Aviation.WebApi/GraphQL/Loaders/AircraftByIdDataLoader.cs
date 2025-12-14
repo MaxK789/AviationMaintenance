@@ -2,27 +2,29 @@ using Aviation.Maintenance.Infrastructure.Data;
 using Aviation.WebApi.GraphQL.Types;
 using GreenDonut;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Aviation.WebApi.GraphQL.Loaders;
 
 public class AircraftByIdDataLoader : BatchDataLoader<int, AircraftGql>
 {
-    private readonly IDbContextFactory<MaintenanceDbContext> _dbFactory;
+    private readonly IServiceScopeFactory _scopeFactory;
 
     public AircraftByIdDataLoader(
-        IDbContextFactory<MaintenanceDbContext> dbFactory,
+        IServiceScopeFactory scopeFactory,
         IBatchScheduler batchScheduler,
         DataLoaderOptions? options = null)
         : base(batchScheduler, options)
     {
-        _dbFactory = dbFactory;
+        _scopeFactory = scopeFactory;
     }
 
     protected override async Task<IReadOnlyDictionary<int, AircraftGql>> LoadBatchAsync(
         IReadOnlyList<int> keys,
         CancellationToken cancellationToken)
     {
-        await using var db = await _dbFactory.CreateDbContextAsync(cancellationToken);
+        using var scope = _scopeFactory.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<MaintenanceDbContext>();
 
         var list = await db.Aircraft
             .Where(a => keys.Contains(a.Id))
