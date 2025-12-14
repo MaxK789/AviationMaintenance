@@ -1,6 +1,5 @@
 using System.Text.Json.Serialization;
 using Aviation.Maintenance.Grpc;
-using Aviation.Maintenance.Infrastructure.Data;
 using Aviation.Maintenance.Infrastructure.Extensions;
 using Aviation.WebApi.GraphQL;
 using Aviation.WebApi.GraphQL.Loaders;
@@ -12,13 +11,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Подключаем нашу инфраструктуру (DbContext + сервисы)
 builder.Services.AddMaintenanceInfrastructure(builder.Configuration);
-
-builder.Services.AddPooledDbContextFactory<MaintenanceDbContext>(options =>
-{
-    var cs = builder.Configuration.GetConnectionString("Maintenance")
-             ?? "Data Source=AviationMaintenance.db";
-    options.UseSqlite(cs);
-});
 
 // Добавляем контроллеры и делаем enum'ы строками в JSON
 builder.Services
