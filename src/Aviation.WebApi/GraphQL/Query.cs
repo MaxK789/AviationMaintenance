@@ -4,7 +4,7 @@ using Aviation.WebApi.GraphQL.Inputs;
 using Aviation.WebApi.GraphQL.Mappers;
 using Aviation.WebApi.GraphQL.Types;
 
-using Grpc = Aviation.Maintenance.Grpc;
+using MaintenanceGrpc = Aviation.Maintenance.Grpc;
 using ProtoStatus = Aviation.Maintenance.Grpc.WorkOrderStatus;
 using ProtoPriority = Aviation.Maintenance.Grpc.WorkOrderPriority;
 
@@ -47,12 +47,12 @@ public class Query
 
     public async Task<WorkOrdersPage> GetWorkOrdersPage(
         WorkOrderFilterInput? filter,
-        [Service] Grpc.WorkOrderService.WorkOrderServiceClient grpc,
+        [Service] MaintenanceGrpc.WorkOrderService.WorkOrderServiceClient grpc,
         int skip = 0,
         int take = 20,
         CancellationToken ct = default)
     {
-        var request = new Grpc.ListWorkOrdersRequest
+        var request = new MaintenanceGrpc.ListWorkOrdersRequest
         {
             AircraftId = filter?.AircraftId ?? 0,
             Status = filter?.Status is null ? ProtoStatus.WorkOrderStatusUnknown : WorkOrderGrpcMapper.ToProtoStatus(filter.Status.Value),

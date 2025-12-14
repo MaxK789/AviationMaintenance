@@ -3,7 +3,7 @@ using Aviation.WebApi.GraphQL.Mappers;
 using Aviation.WebApi.GraphQL.Payloads;
 using Grpc.Core;
 
-using Grpc = Aviation.Maintenance.Grpc;
+using MaintenanceGrpc = Aviation.Maintenance.Grpc;
 
 namespace Aviation.WebApi.GraphQL;
 
@@ -11,12 +11,12 @@ public class Mutation
 {
     public async Task<CreateWorkOrderPayload> CreateWorkOrder(
         CreateWorkOrderInput input,
-        [Service] Grpc.WorkOrderService.WorkOrderServiceClient grpc,
+        [Service] MaintenanceGrpc.WorkOrderService.WorkOrderServiceClient grpc,
         CancellationToken ct)
     {
         try
         {
-            var req = new Grpc.CreateWorkOrderRequest
+            var req = new MaintenanceGrpc.CreateWorkOrderRequest
             {
                 AircraftId = input.AircraftId,
                 Title = input.Title,
@@ -47,12 +47,12 @@ public class Mutation
 
     public async Task<ChangeWorkOrderStatusPayload> ChangeWorkOrderStatus(
         ChangeWorkOrderStatusInput input,
-        [Service] Grpc.WorkOrderService.WorkOrderServiceClient grpc,
+        [Service] MaintenanceGrpc.WorkOrderService.WorkOrderServiceClient grpc,
         CancellationToken ct)
     {
         try
         {
-            var req = new Grpc.ChangeWorkOrderStatusRequest
+            var req = new MaintenanceGrpc.ChangeWorkOrderStatusRequest
             {
                 Id = input.Id,
                 NewStatus = WorkOrderGrpcMapper.ToProtoStatus(input.NewStatus)
