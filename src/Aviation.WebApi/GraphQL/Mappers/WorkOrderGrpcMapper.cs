@@ -1,7 +1,6 @@
 using Aviation.WebApi.GraphQL.Types;
 using Google.Protobuf.WellKnownTypes;
 
-using Grpc = Aviation.Maintenance.Grpc;
 using WorkOrderModel = Aviation.Maintenance.Grpc.WorkOrderModel;
 
 using DomainStatus = Aviation.Maintenance.Domain.Enums.WorkOrderStatus;
