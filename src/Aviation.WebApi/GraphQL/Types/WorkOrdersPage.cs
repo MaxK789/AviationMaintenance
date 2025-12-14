@@ -2,6 +2,6 @@ namespace Aviation.WebApi.GraphQL.Types;
 
 public class WorkOrdersPage
 {
-    public required IReadOnlyList<WorkOrderGql> Items { get; init; }
-    public required int TotalCount { get; init; }
+    public IReadOnlyList<WorkOrderGql> Items { get; init; } = Array.Empty<WorkOrderGql>();
+    public int TotalCount { get; init; }
 }
