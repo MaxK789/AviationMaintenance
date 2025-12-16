@@ -61,6 +61,6 @@ app.MapControllers();
 // Хаб для ЛР2
 app.MapHub<MaintenanceHub>("/hubs/maintenance");
 
-app.MapGraphQL("/graphql");
+app.MapGraphQL("/api/graphql");
 
 app.Run();
