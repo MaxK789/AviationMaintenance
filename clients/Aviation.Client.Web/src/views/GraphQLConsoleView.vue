@@ -26,7 +26,7 @@ async function execute() {
       variables = JSON.parse(variablesText.value)
     }
 
-    const response = await fetch('/graphql', {
+    const response = await fetch('/api/graphql', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -58,7 +58,7 @@ async function execute() {
   <section class="graphql-console">
     <h2>GraphQL Console</h2>
     <p class="hint">
-      Здесь можно руками отправлять GraphQL-запросы на <code>/graphql</code>.
+      Здесь можно руками отправлять GraphQL-запросы на <code>/api/graphql</code>.
     </p>
 
     <div class="panes">
