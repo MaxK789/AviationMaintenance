@@ -5,6 +5,7 @@ using Aviation.WebApi.GraphQL;
 using Aviation.WebApi.GraphQL.Loaders;
 using Aviation.WebApi.GraphQL.Resolvers;
 using Aviation.WebApi.Hubs;
+using Aviation.WebApi.Options;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,12 +24,16 @@ builder.Services
 // SignalR
 builder.Services.AddSignalR();
 
-builder.Services.AddGrpcClient<WorkOrderService.WorkOrderServiceClient>(o =>
+builder.Services.Configure<GrpcOptions>(builder.Configuration.GetSection("Grpc"));
+
+builder.Services.AddGrpcClient<WorkOrderService.WorkOrderServiceClient>((sp, o) =>
 {
-    // ВАЖНО: сюда подставь адрес, который пишет консоль при запуске Aviation.Maintenance.Grpc
-    // пример:
-    // o.Address = new Uri("https://localhost:7120");
-    o.Address = new Uri("http://localhost:5004");
+    var grpc = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<GrpcOptions>>().Value;
+
+    if (string.IsNullOrWhiteSpace(grpc.WorkOrdersUrl))
+        throw new InvalidOperationException("Grpc:WorkOrdersUrl is not configured");
+
+    o.Address = new Uri(grpc.WorkOrdersUrl);
 });
 
 builder.Services
