@@ -1,0 +1,41 @@
+@host = http://localhost:5185
+@key = dev-super-secret-key
+
+### 1) GET aircraft list
+GET {{host}}/api/aircraft
+X-API-KEY: {{key}}
+
+### 2) GET workorders list
+GET {{host}}/api/workorders
+X-API-KEY: {{key}}
+
+### 3) POST create workorder
+POST {{host}}/api/workorders
+X-API-KEY: {{key}}
+Content-Type: application/json
+
+{
+  "aircraftId": 1,
+  "title": "Check hydraulics",
+  "description": "Routine check",
+  "priority": "Medium",
+  "plannedStart": null,
+  "plannedEnd": null
+}
+
+### 4) PUT update workorder (підстав id який створився)
+PUT {{host}}/api/workorders/1
+X-API-KEY: {{key}}
+Content-Type: application/json
+
+{
+  "title": "Check hydraulics (updated)",
+  "description": "Routine check + notes",
+  "priority": "High",
+  "plannedStart": null,
+  "plannedEnd": null
+}
+
+### 5) DELETE workorder (підстав id)
+DELETE {{host}}/api/workorders/1
+X-API-KEY: {{key}}
