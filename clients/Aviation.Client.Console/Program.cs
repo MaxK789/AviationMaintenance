@@ -8,7 +8,10 @@ class Program
         Console.WriteLine("Aviation.Client.Console (gRPC)");
 
         // адрес тот же, что ты указал в WebApi для WorkOrderServiceClient
-        var grpcAddress = "http://localhost:5004";
+        var grpcAddress =
+            args.FirstOrDefault(a => a.StartsWith("--grpc=", StringComparison.OrdinalIgnoreCase))?.Split('=', 2)[1]
+            ?? Environment.GetEnvironmentVariable("GRPC_WORKORDERS_URL")
+            ?? "http://localhost:5004";
 
         using var channel = GrpcChannel.ForAddress(grpcAddress);
         var client = new WorkOrderService.WorkOrderServiceClient(channel);

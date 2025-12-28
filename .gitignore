@@ -59,6 +59,7 @@ _ReSharper*/
 appsettings.Development.json
 appsettings.Local.json
 .env
+!/src/Aviation.WebApi/appsettings.Development.json
 
 # ===========================
 # СИСТЕМНЫЕ ФАЙЛЫ (OS)

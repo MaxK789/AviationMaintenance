@@ -1,6 +1,9 @@
 @Aviation.WebApi_HostAddress = http://localhost:5185
 
-GET {{Aviation.WebApi_HostAddress}}/weatherforecast/
+GET {{Aviation.WebApi_HostAddress}}/api/aircraft
 Accept: application/json
 
 ###
+
+GET {{Aviation.WebApi_HostAddress}}/api/workorders
+Accept: application/json
