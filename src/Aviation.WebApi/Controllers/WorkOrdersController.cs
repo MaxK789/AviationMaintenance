@@ -123,9 +123,6 @@ public class WorkOrdersController : ControllerBase
         [FromBody] UpdateWorkOrderRequestDto request,
         CancellationToken ct)
     {
-        var existingAircraft = await _aircraftService.GetByIdAsync(request.AircraftId, ct)
-                               ?? throw new NotFoundAppException($"Aircraft {request.AircraftId} not found");
-
         var grpcRequest = new GrpcUpdateWorkOrderRequest
         {
             Id = id,
@@ -139,7 +136,10 @@ public class WorkOrdersController : ControllerBase
         var response = await _client.UpdateWorkOrderAsync(grpcRequest, cancellationToken: ct);
         var model = response.WorkOrder;
 
-        var dto = MapToDto(model, existingAircraft);
+        var aircraft = await _aircraftService.GetByIdAsync(model.AircraftId, ct)
+                       ?? throw new NotFoundAppException($"Aircraft {model.AircraftId} not found");
+
+        var dto = MapToDto(model, aircraft);
 
         await NotifyUpdated(dto, ct);
         return Ok(dto);
