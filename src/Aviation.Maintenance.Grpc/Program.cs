@@ -1,3 +1,4 @@
+using Aviation.Maintenance.Grpc.Interceptors;
 using Aviation.Maintenance.Grpc.Services;
 using Aviation.Maintenance.Infrastructure.Extensions;
 
@@ -7,7 +8,11 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddMaintenanceInfrastructure(builder.Configuration);
 
 // Регистрируем gRPC
-builder.Services.AddGrpc();
+builder.Services.AddGrpc(o =>
+{
+    o.Interceptors.Add<GrpcExceptionInterceptor>();
+});
+builder.Services.AddSingleton<GrpcExceptionInterceptor>();
 
 var app = builder.Build();
 

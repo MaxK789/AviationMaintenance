@@ -6,6 +6,8 @@ using Aviation.WebApi.GraphQL.Loaders;
 using Aviation.WebApi.GraphQL.Resolvers;
 using Aviation.WebApi.Hubs;
 using Aviation.WebApi.Options;
+using Grpc.Core;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
@@ -39,18 +41,6 @@ builder.Services.AddGrpcClient<WorkOrderService.WorkOrderServiceClient>((sp, o) 
 
     o.Address = new Uri(grpc.WorkOrdersUrl);
 });
-
-builder.Services.AddProblemDetails(o =>
-{
-    o.CustomizeProblemDetails = ctx =>
-    {
-        ctx.ProblemDetails.Extensions["traceId"] = Activity.Current?.Id ?? ctx.HttpContext.TraceIdentifier;
-    };
-});
-
-builder.Services.AddExceptionHandler<GrpcExceptionHandler>();
-builder.Services.AddExceptionHandler<AppExceptionHandler>();
-builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
 // Чтобы 400 по валидации тоже было в формате ProblemDetails (и с traceId)
 builder.Services.Configure<ApiBehaviorOptions>(o =>
@@ -91,7 +81,72 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-app.UseExceptionHandler();
+app.UseExceptionHandler(errorApp =>
+{
+    errorApp.Run(async context =>
+    {
+        var ex = context.Features.Get<IExceptionHandlerPathFeature>()?.Error;
+
+        if (ex is null)
+        {
+            context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+            return;
+        }
+
+        ProblemDetails pd;
+
+        if (ex is AppException appEx)
+        {
+            context.Response.StatusCode = appEx.StatusCode;
+
+            pd = new ProblemDetails
+            {
+                Status = appEx.StatusCode,
+                Title = appEx.Code,
+                Detail = appEx.Message,
+                Instance = context.Request.Path
+            };
+
+            pd.Extensions["traceId"] = Activity.Current?.Id ?? context.TraceIdentifier;
+            pd.Extensions["code"] = appEx.Code;
+        }
+        else if (ex is RpcException rpc)
+        {
+            var (status, title) = GrpcHttpStatusMapper.Map(rpc.StatusCode);
+            context.Response.StatusCode = status;
+
+            pd = new ProblemDetails
+            {
+                Status = status,
+                Title = title,
+                Detail = app.Environment.IsDevelopment() ? rpc.Status.Detail : "Upstream service error",
+                Instance = context.Request.Path
+            };
+
+            pd.Extensions["traceId"] = Activity.Current?.Id ?? context.TraceIdentifier;
+            pd.Extensions["grpcStatus"] = rpc.StatusCode.ToString();
+            pd.Extensions["code"] = "GRPC_ERROR";
+        }
+        else
+        {
+            context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+
+            pd = new ProblemDetails
+            {
+                Status = StatusCodes.Status500InternalServerError,
+                Title = "INTERNAL_ERROR",
+                Detail = app.Environment.IsDevelopment() ? ex.ToString() : "Unexpected server error",
+                Instance = context.Request.Path
+            };
+
+            pd.Extensions["traceId"] = Activity.Current?.Id ?? context.TraceIdentifier;
+            pd.Extensions["code"] = "INTERNAL_ERROR";
+        }
+
+        context.Response.ContentType = "application/problem+json";
+        await context.Response.WriteAsJsonAsync(pd);
+    });
+});
 
 // ProblemDetails даже для “обычных” 404/401/403 без exception
 app.UseStatusCodePages(async statusCtx =>
@@ -112,6 +167,7 @@ app.UseStatusCodePages(async statusCtx =>
     };
 
     pd.Extensions["traceId"] = Activity.Current?.Id ?? http.TraceIdentifier;
+    pd.Extensions["code"] = "HTTP_STATUS";
 
     http.Response.ContentType = "application/problem+json";
     await http.Response.WriteAsJsonAsync(pd);
