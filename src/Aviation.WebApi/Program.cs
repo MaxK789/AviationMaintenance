@@ -34,9 +34,9 @@ builder.Services
 builder.Services.AddSignalR();
 
 builder.Services
-    .AddAuthentication(ApiKeyAuthenticationHandler.Scheme)
+    .AddAuthentication(ApiKeyAuthenticationHandler.SchemeName)
     .AddScheme<AuthenticationSchemeOptions, ApiKeyAuthenticationHandler>(
-        ApiKeyAuthenticationHandler.Scheme, _ => { });
+        ApiKeyAuthenticationHandler.SchemeName, _ => { });
 
 builder.Services.AddAuthorization();
 
