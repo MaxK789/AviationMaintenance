@@ -9,7 +9,7 @@ namespace Aviation.WebApi.Authentication;
 
 public sealed class ApiKeyAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
 {
-    public const string Scheme = "ApiKey";
+    public const string SchemeName = "ApiKey";
     public const string HeaderName = "X-API-KEY";
     public const string QueryName = "api_key"; // для SignalR у браузері
 
@@ -19,8 +19,9 @@ public sealed class ApiKeyAuthenticationHandler : AuthenticationHandler<Authenti
         IOptionsMonitor<AuthenticationSchemeOptions> options,
         ILoggerFactory logger,
         UrlEncoder encoder,
+        ISystemClock clock,
         IConfiguration cfg)
-        : base(options, logger, encoder)
+        : base(options, logger, encoder, clock)
     {
         _cfg = cfg;
     }
@@ -52,9 +53,9 @@ public sealed class ApiKeyAuthenticationHandler : AuthenticationHandler<Authenti
             return Task.FromResult(AuthenticateResult.Fail("Invalid API key"));
 
         var claims = new[] { new Claim(ClaimTypes.Name, "ApiKeyClient") };
-        var identity = new ClaimsIdentity(claims, Scheme);
+        var identity = new ClaimsIdentity(claims, SchemeName);
         var principal = new ClaimsPrincipal(identity);
-        var ticket = new AuthenticationTicket(principal, Scheme);
+        var ticket = new AuthenticationTicket(principal, SchemeName);
 
         return Task.FromResult(AuthenticateResult.Success(ticket));
     }
