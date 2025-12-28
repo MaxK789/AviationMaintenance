@@ -4,9 +4,12 @@ using Aviation.WebApi.Errors;
 using Aviation.WebApi.GraphQL;
 using Aviation.WebApi.GraphQL.Loaders;
 using Aviation.WebApi.GraphQL.Resolvers;
+using Aviation.WebApi.Authentication;
 using Aviation.WebApi.Hubs;
+using Aviation.WebApi.Grpc;
 using Aviation.WebApi.Options;
 using Grpc.Core;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
@@ -30,7 +33,20 @@ builder.Services
 // SignalR
 builder.Services.AddSignalR();
 
+builder.Services
+    .AddAuthentication(ApiKeyAuthenticationHandler.Scheme)
+    .AddScheme<AuthenticationSchemeOptions, ApiKeyAuthenticationHandler>(
+        ApiKeyAuthenticationHandler.Scheme, _ => { });
+
+builder.Services.AddAuthorization();
+
 builder.Services.Configure<GrpcOptions>(builder.Configuration.GetSection("Grpc"));
+
+var apiKey = builder.Configuration["Security:ApiKey"];
+if (string.IsNullOrWhiteSpace(apiKey))
+    throw new InvalidOperationException("Security:ApiKey is not configured");
+
+builder.Services.AddSingleton(new ApiKeyClientInterceptor(apiKey));
 
 builder.Services.AddGrpcClient<WorkOrderService.WorkOrderServiceClient>((sp, o) =>
 {
@@ -40,7 +56,8 @@ builder.Services.AddGrpcClient<WorkOrderService.WorkOrderServiceClient>((sp, o) 
         throw new InvalidOperationException("Grpc:WorkOrdersUrl is not configured");
 
     o.Address = new Uri(grpc.WorkOrdersUrl);
-});
+})
+.AddInterceptor<ApiKeyClientInterceptor>();
 
 // Чтобы 400 по валидации тоже было в формате ProblemDetails (и с traceId)
 builder.Services.Configure<ApiBehaviorOptions>(o =>
@@ -77,7 +94,31 @@ builder.Services
 
 // Swagger (удобно для теста ЛР1)
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.AddSecurityDefinition("ApiKey", new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+    {
+        Type = Microsoft.OpenApi.Models.SecuritySchemeType.ApiKey,
+        Name = ApiKeyAuthenticationHandler.HeaderName,
+        In = Microsoft.OpenApi.Models.ParameterLocation.Header,
+        Description = "Enter API key"
+    });
+
+    c.AddSecurityRequirement(new Microsoft.OpenApi.Models.OpenApiSecurityRequirement
+    {
+        {
+            new Microsoft.OpenApi.Models.OpenApiSecurityScheme
+            {
+                Reference = new Microsoft.OpenApi.Models.OpenApiReference
+                {
+                    Type = Microsoft.OpenApi.Models.ReferenceType.SecurityScheme,
+                    Id = "ApiKey"
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
+});
 
 var app = builder.Build();
 
@@ -182,13 +223,14 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapControllers();
+app.MapControllers().RequireAuthorization();
 
 // Хаб для ЛР2
-app.MapHub<MaintenanceHub>("/hubs/maintenance");
+app.MapHub<MaintenanceHub>("/hubs/maintenance").RequireAuthorization();
 
-app.MapGraphQL("/api/graphql");
+app.MapGraphQL("/api/graphql").RequireAuthorization();
 
 app.Run();

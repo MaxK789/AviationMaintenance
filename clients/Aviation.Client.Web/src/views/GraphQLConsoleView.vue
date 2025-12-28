@@ -1,6 +1,8 @@
 <script setup>
 import { ref } from 'vue'
 
+const apiKey = import.meta.env.VITE_API_KEY
+
 const query = ref(`query {
   aircrafts {
     id
@@ -29,7 +31,8 @@ async function execute() {
     const response = await fetch('/api/graphql', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'X-API-KEY': apiKey
       },
       body: JSON.stringify({
         query: query.value,
