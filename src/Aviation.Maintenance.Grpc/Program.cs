@@ -10,8 +10,10 @@ builder.Services.AddMaintenanceInfrastructure(builder.Configuration);
 // Регистрируем gRPC
 builder.Services.AddGrpc(o =>
 {
+    o.Interceptors.Add<ApiKeyServerInterceptor>();
     o.Interceptors.Add<GrpcExceptionInterceptor>();
 });
+builder.Services.AddSingleton<ApiKeyServerInterceptor>();
 builder.Services.AddSingleton<GrpcExceptionInterceptor>();
 
 var app = builder.Build();

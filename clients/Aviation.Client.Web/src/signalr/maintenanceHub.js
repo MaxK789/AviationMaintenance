@@ -3,6 +3,8 @@ import * as signalR from '@microsoft/signalr'
 let connection = null
 let started = false
 
+const apiKey = import.meta.env.VITE_API_KEY
+
 const listeners = {
   workOrderCreated: [],
   workOrderUpdated: [],
@@ -12,7 +14,7 @@ const listeners = {
 function ensureConnection() {
   if (!connection) {
     connection = new signalR.HubConnectionBuilder()
-      .withUrl('/hubs/maintenance')
+      .withUrl(`/hubs/maintenance?api_key=${encodeURIComponent(apiKey)}`)
       .withAutomaticReconnect()
       .build()
 

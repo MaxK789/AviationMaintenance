@@ -1,4 +1,5 @@
 using Aviation.Maintenance.Grpc;
+using Grpc.Core;
 using Grpc.Net.Client;
 
 class Program
@@ -12,6 +13,13 @@ class Program
             args.FirstOrDefault(a => a.StartsWith("--grpc=", StringComparison.OrdinalIgnoreCase))?.Split('=', 2)[1]
             ?? Environment.GetEnvironmentVariable("GRPC_WORKORDERS_URL")
             ?? "http://localhost:5004";
+
+        var apiKey =
+            args.FirstOrDefault(a => a.StartsWith("--apikey=", StringComparison.OrdinalIgnoreCase))?.Split('=', 2)[1]
+            ?? Environment.GetEnvironmentVariable("API_KEY")
+            ?? "dev-super-secret-key";
+
+        var headers = new Metadata { { "x-api-key", apiKey } };
 
         using var channel = GrpcChannel.ForAddress(grpcAddress);
         var client = new WorkOrderService.WorkOrderServiceClient(channel);
@@ -30,16 +38,16 @@ class Program
             switch (input)
             {
                 case "1":
-                    await ListWorkOrders(client);
+                    await ListWorkOrders(client, headers);
                     break;
                 case "2":
-                    await CreateWorkOrder(client);
+                    await CreateWorkOrder(client, headers);
                     break;
                 case "3":
-                    await ChangeStatus(client);
+                    await ChangeStatus(client, headers);
                     break;
                 case "4":
-                    await DeleteWorkOrder(client);
+                    await DeleteWorkOrder(client, headers);
                     break;
                 case "0":
                     return;
@@ -50,9 +58,9 @@ class Program
         }
     }
 
-    private static async Task ListWorkOrders(WorkOrderService.WorkOrderServiceClient client)
+    private static async Task ListWorkOrders(WorkOrderService.WorkOrderServiceClient client, Metadata headers)
     {
-        var response = await client.ListWorkOrdersAsync(new ListWorkOrdersRequest());
+        var response = await client.ListWorkOrdersAsync(new ListWorkOrdersRequest(), headers: headers);
         Console.WriteLine($"Total: {response.WorkOrders.Count}");
         foreach (var w in response.WorkOrders)
         {
@@ -60,7 +68,7 @@ class Program
         }
     }
 
-    private static async Task CreateWorkOrder(WorkOrderService.WorkOrderServiceClient client)
+    private static async Task CreateWorkOrder(WorkOrderService.WorkOrderServiceClient client, Metadata headers)
     {
         Console.Write("AircraftId: ");
         var aircraftIdStr = Console.ReadLine();
@@ -84,11 +92,11 @@ class Program
             PlannedStart = Google.Protobuf.WellKnownTypes.Timestamp.FromDateTime(DateTime.SpecifyKind(DateTime.UtcNow, DateTimeKind.Utc))
         };
 
-        var response = await client.CreateWorkOrderAsync(request);
+        var response = await client.CreateWorkOrderAsync(request, headers: headers);
         Console.WriteLine($"Created work order with id: {response.WorkOrder.Id}");
     }
 
-    private static async Task ChangeStatus(WorkOrderService.WorkOrderServiceClient client)
+    private static async Task ChangeStatus(WorkOrderService.WorkOrderServiceClient client, Metadata headers)
     {
         Console.Write("WorkOrderId: ");
         var idStr = Console.ReadLine();
@@ -122,11 +130,11 @@ class Program
             NewStatus = status
         };
 
-        await client.ChangeWorkOrderStatusAsync(request);
+        await client.ChangeWorkOrderStatusAsync(request, headers: headers);
         Console.WriteLine("Status changed");
     }
 
-    private static async Task DeleteWorkOrder(WorkOrderService.WorkOrderServiceClient client)
+    private static async Task DeleteWorkOrder(WorkOrderService.WorkOrderServiceClient client, Metadata headers)
     {
         Console.Write("WorkOrderId: ");
         var idStr = Console.ReadLine();
@@ -136,7 +144,7 @@ class Program
             return;
         }
 
-        await client.DeleteWorkOrderAsync(new DeleteWorkOrderRequest { Id = id });
+        await client.DeleteWorkOrderAsync(new DeleteWorkOrderRequest { Id = id }, headers: headers);
         Console.WriteLine("Deleted");
     }
 }
