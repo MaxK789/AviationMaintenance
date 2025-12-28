@@ -1,6 +1,7 @@
 using Aviation.Maintenance.Domain.Enums;
 using Aviation.Maintenance.Domain.Interfaces;
 using Aviation.WebApi.Dtos;
+using Aviation.WebApi.Errors;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Aviation.WebApi.Controllers;
@@ -40,7 +41,7 @@ public class AircraftController : ControllerBase
     public async Task<ActionResult<AircraftDto>> GetById(int id, CancellationToken ct)
     {
         var entity = await _aircraftService.GetByIdAsync(id, ct);
-        if (entity is null) return NotFound();
+        if (entity is null) throw new NotFoundAppException($"Aircraft {id} not found");
 
         var dto = new AircraftDto
         {
@@ -83,29 +84,25 @@ public class AircraftController : ControllerBase
         [FromBody] UpdateAircraftRequest request,
         CancellationToken ct)
     {
-        try
-        {
-            var entity = await _aircraftService.UpdateAsync(
-                id,
-                request.TailNumber,
-                request.Model,
-                request.Status,
-                ct);
+        var existing = await _aircraftService.GetByIdAsync(id, ct);
+        if (existing is null) throw new NotFoundAppException($"Aircraft {id} not found");
 
-            var dto = new AircraftDto
-            {
-                Id = entity.Id,
-                TailNumber = entity.TailNumber,
-                Model = entity.Model,
-                Status = entity.Status
-            };
+        var entity = await _aircraftService.UpdateAsync(
+            id,
+            request.TailNumber,
+            request.Model,
+            request.Status,
+            ct);
 
-            return Ok(dto);
-        }
-        catch (InvalidOperationException)
+        var dto = new AircraftDto
         {
-            return NotFound();
-        }
+            Id = entity.Id,
+            TailNumber = entity.TailNumber,
+            Model = entity.Model,
+            Status = entity.Status
+        };
+
+        return Ok(dto);
     }
 
     // DELETE /api/aircraft/5

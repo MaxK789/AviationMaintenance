@@ -80,34 +80,48 @@ public sealed class WorkOrderGrpcService : WorkOrderService.WorkOrderServiceBase
         UpdateWorkOrderRequest request,
         ServerCallContext context)
     {
-        var entity = await _workOrders.UpdateAsync(
-            request.Id,
-            request.Title,
-            string.IsNullOrWhiteSpace(request.Description) ? null : request.Description,
-            request.Priority.ToDomainPriority(),
-            request.PlannedStart.ToNullableDateTime(),
-            request.PlannedEnd.ToNullableDateTime(),
-            context.CancellationToken);
-
-        return new UpdateWorkOrderResponse
+        try
         {
-            WorkOrder = MapToModel(entity)
-        };
+            var entity = await _workOrders.UpdateAsync(
+                request.Id,
+                request.Title,
+                string.IsNullOrWhiteSpace(request.Description) ? null : request.Description,
+                request.Priority.ToDomainPriority(),
+                request.PlannedStart.ToNullableDateTime(),
+                request.PlannedEnd.ToNullableDateTime(),
+                context.CancellationToken);
+
+            return new UpdateWorkOrderResponse
+            {
+                WorkOrder = MapToModel(entity)
+            };
+        }
+        catch (InvalidOperationException ex)
+        {
+            throw new RpcException(new Status(StatusCode.NotFound, ex.Message));
+        }
     }
 
     public override async Task<ChangeWorkOrderStatusResponse> ChangeWorkOrderStatus(
         ChangeWorkOrderStatusRequest request,
         ServerCallContext context)
     {
-        var entity = await _workOrders.ChangeStatusAsync(
-            request.Id,
-            request.NewStatus.ToDomainStatus(),
-            context.CancellationToken);
-
-        return new ChangeWorkOrderStatusResponse
+        try
         {
-            WorkOrder = MapToModel(entity)
-        };
+            var entity = await _workOrders.ChangeStatusAsync(
+                request.Id,
+                request.NewStatus.ToDomainStatus(),
+                context.CancellationToken);
+
+            return new ChangeWorkOrderStatusResponse
+            {
+                WorkOrder = MapToModel(entity)
+            };
+        }
+        catch (InvalidOperationException ex)
+        {
+            throw new RpcException(new Status(StatusCode.NotFound, ex.Message));
+        }
     }
 
     public override async Task<DeleteWorkOrderResponse> DeleteWorkOrder(
