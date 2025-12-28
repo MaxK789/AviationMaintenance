@@ -4,6 +4,10 @@ using Aviation.Maintenance.Infrastructure.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var apiKey = builder.Configuration["Security:ApiKey"];
+if (string.IsNullOrWhiteSpace(apiKey))
+    throw new InvalidOperationException("Security:ApiKey is missing in Aviation.Maintenance.Grpc");
+
 // Подключаем DbContext + доменные сервисы
 builder.Services.AddMaintenanceInfrastructure(builder.Configuration);
 
