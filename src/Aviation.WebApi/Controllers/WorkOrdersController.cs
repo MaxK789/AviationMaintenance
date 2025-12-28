@@ -2,6 +2,7 @@ using Aviation.Maintenance.Domain.Entities;
 using Aviation.Maintenance.Domain.Interfaces;
 using Aviation.Maintenance.Grpc;
 using Aviation.WebApi.Dtos;
+using Aviation.WebApi.Errors;
 using Aviation.WebApi.Hubs;
 using Google.Protobuf.WellKnownTypes;
 using Microsoft.AspNetCore.Mvc;
@@ -77,22 +78,16 @@ public class WorkOrdersController : ControllerBase
     [HttpGet("{id:int}")]
     public async Task<ActionResult<WorkOrderDto>> GetById(int id, CancellationToken ct)
     {
-        try
-        {
-            var response = await _client.GetWorkOrderAsync(
-                new GrpcGetWorkOrderRequest { Id = id },
-                cancellationToken: ct);
+        var response = await _client.GetWorkOrderAsync(
+            new GrpcGetWorkOrderRequest { Id = id },
+            cancellationToken: ct);
 
-            var model = response.WorkOrder;
-            var aircraft = await _aircraftService.GetByIdAsync(model.AircraftId, ct);
+        var model = response.WorkOrder;
+        var aircraft = await _aircraftService.GetByIdAsync(model.AircraftId, ct)
+                      ?? throw new NotFoundAppException($"Aircraft {model.AircraftId} not found");
 
-            var dto = MapToDto(model, aircraft);
-            return Ok(dto);
-        }
-        catch (Grpc.Core.RpcException ex) when (ex.StatusCode == Grpc.Core.StatusCode.NotFound)
-        {
-            return NotFound();
-        }
+        var dto = MapToDto(model, aircraft);
+        return Ok(dto);
     }
 
     // POST /api/workorders
@@ -128,6 +123,9 @@ public class WorkOrdersController : ControllerBase
         [FromBody] UpdateWorkOrderRequestDto request,
         CancellationToken ct)
     {
+        var existingAircraft = await _aircraftService.GetByIdAsync(request.AircraftId, ct)
+                               ?? throw new NotFoundAppException($"Aircraft {request.AircraftId} not found");
+
         var grpcRequest = new GrpcUpdateWorkOrderRequest
         {
             Id = id,
@@ -138,21 +136,13 @@ public class WorkOrdersController : ControllerBase
             PlannedEnd = FromNullableDateTime(request.PlannedEnd)
         };
 
-        try
-        {
-            var response = await _client.UpdateWorkOrderAsync(grpcRequest, cancellationToken: ct);
-            var model = response.WorkOrder;
-            var aircraft = await _aircraftService.GetByIdAsync(model.AircraftId, ct);
+        var response = await _client.UpdateWorkOrderAsync(grpcRequest, cancellationToken: ct);
+        var model = response.WorkOrder;
 
-            var dto = MapToDto(model, aircraft);
+        var dto = MapToDto(model, existingAircraft);
 
-            await NotifyUpdated(dto, ct);
-            return Ok(dto);
-        }
-        catch (Grpc.Core.RpcException ex) when (ex.StatusCode == Grpc.Core.StatusCode.NotFound)
-        {
-            return NotFound();
-        }
+        await NotifyUpdated(dto, ct);
+        return Ok(dto);
     }
 
     // PUT /api/workorders/10/status
@@ -168,21 +158,15 @@ public class WorkOrdersController : ControllerBase
             NewStatus = ToProtoStatus(request.NewStatus)
         };
 
-        try
-        {
-            var response = await _client.ChangeWorkOrderStatusAsync(grpcRequest, cancellationToken: ct);
-            var model = response.WorkOrder;
-            var aircraft = await _aircraftService.GetByIdAsync(model.AircraftId, ct);
+        var response = await _client.ChangeWorkOrderStatusAsync(grpcRequest, cancellationToken: ct);
+        var model = response.WorkOrder;
+        var aircraft = await _aircraftService.GetByIdAsync(model.AircraftId, ct)
+                      ?? throw new NotFoundAppException($"Aircraft {model.AircraftId} not found");
 
-            var dto = MapToDto(model, aircraft);
+        var dto = MapToDto(model, aircraft);
 
-            await NotifyUpdated(dto, ct);
-            return Ok(dto);
-        }
-        catch (Grpc.Core.RpcException ex) when (ex.StatusCode == Grpc.Core.StatusCode.NotFound)
-        {
-            return NotFound();
-        }
+        await NotifyUpdated(dto, ct);
+        return Ok(dto);
     }
 
     // DELETE /api/workorders/10
