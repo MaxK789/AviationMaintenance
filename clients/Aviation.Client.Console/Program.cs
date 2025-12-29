@@ -1,6 +1,7 @@
 using Aviation.Maintenance.Grpc;
 using Grpc.Core;
 using Grpc.Net.Client;
+using System.Linq;
 
 class Program
 {
@@ -164,7 +165,17 @@ class Program
         while (await call.ResponseStream.MoveNext(CancellationToken.None))
         {
             var snapshot = call.ResponseStream.Current;
-            Console.WriteLine($"[{snapshot.UnixTimeSeconds}] workOrders={snapshot.WorkOrders.Count}");
+            var last = snapshot.WorkOrders.OrderByDescending(x => x.Id).FirstOrDefault();
+
+            if (last is null)
+            {
+                Console.WriteLine($"[{snapshot.UnixTimeSeconds}] workOrders=0");
+            }
+            else
+            {
+                Console.WriteLine(
+                    $"[{snapshot.UnixTimeSeconds}] workOrders={snapshot.WorkOrders.Count} | last: #{last.Id} \"{last.Title}\" ({last.Status})");
+            }
 
             received++;
             if (received >= 3)
