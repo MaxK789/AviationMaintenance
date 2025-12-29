@@ -8,7 +8,7 @@ namespace Aviation.WebApi.GraphQL.Resolvers;
 public class WorkOrderResolvers
 {
     // workOrder { aircraft { ... } }
-    public Task<AircraftGql?> GetAircraftAsync(
+    public Task<AircraftGql> GetAircraftAsync(
         [Parent] WorkOrderGql parent,
         AircraftByIdDataLoader loader,
         CancellationToken ct)
