@@ -3,6 +3,7 @@ using Aviation.Maintenance.Domain.Interfaces;
 using Aviation.WebApi.GraphQL.Inputs;
 using Aviation.WebApi.GraphQL.Mappers;
 using Aviation.WebApi.GraphQL.Types;
+using Grpc.Core;
 
 using MaintenanceGrpc = Aviation.Maintenance.Grpc;
 using ProtoStatus = Aviation.Maintenance.Grpc.WorkOrderStatus;
@@ -87,7 +88,7 @@ public class Query
 
             return res.WorkOrder.ToGql();
         }
-        catch (Grpc.Core.RpcException ex) when (ex.StatusCode == Grpc.Core.StatusCode.NotFound)
+        catch (RpcException ex) when (ex.StatusCode == StatusCode.NotFound)
         {
             return null;
         }
