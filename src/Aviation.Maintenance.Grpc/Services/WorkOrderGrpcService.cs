@@ -57,6 +57,31 @@ public sealed class WorkOrderGrpcService : WorkOrderService.WorkOrderServiceBase
         return response;
     }
 
+    public override async Task WatchWorkOrders(
+        WatchWorkOrdersRequest request,
+        IServerStreamWriter<WorkOrdersSnapshot> responseStream,
+        ServerCallContext context)
+    {
+        var intervalSeconds = request.IntervalSeconds <= 0 ? 2 : request.IntervalSeconds;
+        var delay = TimeSpan.FromSeconds(Math.Clamp(intervalSeconds, 1, 30));
+
+        while (!context.CancellationToken.IsCancellationRequested)
+        {
+            var list = await _workOrders.GetListAsync(
+                cancellationToken: context.CancellationToken);
+
+            var snapshot = new WorkOrdersSnapshot
+            {
+                UnixTimeSeconds = DateTimeOffset.UtcNow.ToUnixTimeSeconds()
+            };
+            snapshot.WorkOrders.AddRange(list.Select(MapToModel));
+
+            await responseStream.WriteAsync(snapshot);
+
+            await Task.Delay(delay, context.CancellationToken);
+        }
+    }
+
     public override async Task<CreateWorkOrderResponse> CreateWorkOrder(
         CreateWorkOrderRequest request,
         ServerCallContext context)

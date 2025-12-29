@@ -104,6 +104,15 @@ message DeleteWorkOrderRequest {
 
 message DeleteWorkOrderResponse {}
 
+message WatchWorkOrdersRequest {
+  int32 interval_seconds = 1; // default 2
+}
+
+message WorkOrdersSnapshot {
+  repeated WorkOrderModel work_orders = 1;
+  int64 unix_time_seconds = 2;
+}
+
 // ---------- SERVICE ----------
 
 service WorkOrderService {
@@ -115,4 +124,6 @@ service WorkOrderService {
   rpc ChangeWorkOrderStatus (ChangeWorkOrderStatusRequest) returns (ChangeWorkOrderStatusResponse);
 
   rpc DeleteWorkOrder (DeleteWorkOrderRequest) returns (DeleteWorkOrderResponse);
+
+  rpc WatchWorkOrders (WatchWorkOrdersRequest) returns (stream WorkOrdersSnapshot);
 }

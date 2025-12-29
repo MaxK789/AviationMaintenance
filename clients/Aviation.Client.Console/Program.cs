@@ -31,6 +31,7 @@ class Program
             Console.WriteLine("2) Create work order");
             Console.WriteLine("3) Change status");
             Console.WriteLine("4) Delete work order");
+            Console.WriteLine("5) Watch work orders (stream snapshots)");
             Console.WriteLine("0) Exit");
             Console.Write("Select: ");
             var input = Console.ReadLine();
@@ -48,6 +49,9 @@ class Program
                     break;
                 case "4":
                     await DeleteWorkOrder(client, headers);
+                    break;
+                case "5":
+                    await WatchWorkOrders(client, headers);
                     break;
                 case "0":
                     return;
@@ -146,5 +150,34 @@ class Program
 
         await client.DeleteWorkOrderAsync(new DeleteWorkOrderRequest { Id = id }, headers: headers);
         Console.WriteLine("Deleted");
+    }
+
+    private static async Task WatchWorkOrders(WorkOrderService.WorkOrderServiceClient client, Metadata headers)
+    {
+        Console.WriteLine("Watching work orders snapshots (3 updates)...");
+        var call = client.WatchWorkOrders(
+            new WatchWorkOrdersRequest { IntervalSeconds = 2 },
+            headers: headers,
+            deadline: DateTime.UtcNow.AddMinutes(1));
+
+        try
+        {
+            var received = 0;
+            while (await call.ResponseStream.MoveNext(CancellationToken.None))
+            {
+                var snapshot = call.ResponseStream.Current;
+                Console.WriteLine($"[{snapshot.UnixTimeSeconds}] workOrders={snapshot.WorkOrders.Count}");
+
+                received++;
+                if (received >= 3)
+                {
+                    break;
+                }
+            }
+        }
+        finally
+        {
+            await call.DisposeAsync();
+        }
     }
 }

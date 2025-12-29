@@ -17,12 +17,16 @@ builder.Services.AddGrpc(o =>
     o.Interceptors.Add<ApiKeyServerInterceptor>();
     o.Interceptors.Add<GrpcExceptionInterceptor>();
 });
+builder.Services.AddGrpcReflection();
+builder.Services.AddGrpcHealthChecks();
 builder.Services.AddSingleton<ApiKeyServerInterceptor>();
 builder.Services.AddSingleton<GrpcExceptionInterceptor>();
 
 var app = builder.Build();
 
 app.MapGrpcService<WorkOrderGrpcService>();
+app.MapGrpcHealthChecksService();
+app.MapGrpcReflectionService();
 
 // Просто для проверки через браузер
 app.MapGet("/", () => "Aviation.Maintenance.Grpc is running (gRPC).");
