@@ -61,13 +61,35 @@ public class Query
 
         var response = await grpc.ListWorkOrdersAsync(request, cancellationToken: ct);
 
+        skip = Math.Max(skip, 0);
+        take = Math.Clamp(take, 1, 100);
+
         var all = response.WorkOrders.Select(x => x.ToGql()).ToList();
-        var page = all.Skip(Math.Max(skip, 0)).Take(Math.Max(take, 0)).ToList();
+        var page = all.Skip(skip).Take(take).ToList();
 
         return new WorkOrdersPage
         {
             Items = page,
             TotalCount = all.Count
         };
+    }
+
+    public async Task<WorkOrderGql?> GetWorkOrder(
+        int id,
+        [Service] MaintenanceGrpc.WorkOrderService.WorkOrderServiceClient grpc,
+        CancellationToken ct)
+    {
+        try
+        {
+            var res = await grpc.GetWorkOrderAsync(
+                new MaintenanceGrpc.GetWorkOrderRequest { Id = id },
+                cancellationToken: ct);
+
+            return res.WorkOrder.ToGql();
+        }
+        catch (Grpc.Core.RpcException ex) when (ex.StatusCode == Grpc.Core.StatusCode.NotFound)
+        {
+            return null;
+        }
     }
 }
