@@ -155,29 +155,22 @@ class Program
     private static async Task WatchWorkOrders(WorkOrderService.WorkOrderServiceClient client, Metadata headers)
     {
         Console.WriteLine("Watching work orders snapshots (3 updates)...");
-        var call = client.WatchWorkOrders(
+        using var call = client.WatchWorkOrders(
             new WatchWorkOrdersRequest { IntervalSeconds = 2 },
             headers: headers,
             deadline: DateTime.UtcNow.AddMinutes(1));
 
-        try
+        var received = 0;
+        while (await call.ResponseStream.MoveNext(CancellationToken.None))
         {
-            var received = 0;
-            while (await call.ResponseStream.MoveNext(CancellationToken.None))
-            {
-                var snapshot = call.ResponseStream.Current;
-                Console.WriteLine($"[{snapshot.UnixTimeSeconds}] workOrders={snapshot.WorkOrders.Count}");
+            var snapshot = call.ResponseStream.Current;
+            Console.WriteLine($"[{snapshot.UnixTimeSeconds}] workOrders={snapshot.WorkOrders.Count}");
 
-                received++;
-                if (received >= 3)
-                {
-                    break;
-                }
+            received++;
+            if (received >= 3)
+            {
+                break;
             }
-        }
-        finally
-        {
-            await call.DisposeAsync();
         }
     }
 }
