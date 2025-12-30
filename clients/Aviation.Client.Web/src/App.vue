@@ -3,7 +3,7 @@
     <header class="app-header">
       <h1>Aviation Maintenance Portal</h1>
       <nav>
-        <router-link to="/aircraft">Самолёты</router-link>
+        <router-link to="/aircraft">Літаки</router-link>
         <router-link to="/workorders">Заявки</router-link>
         <router-link to="/graphql">GraphQL</router-link>
       </nav>

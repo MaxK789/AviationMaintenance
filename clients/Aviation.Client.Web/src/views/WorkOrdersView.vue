@@ -48,7 +48,7 @@ async function loadInitial() {
     }
   } catch (e) {
     console.error(e)
-    error.value = 'Ошибка загрузки данных'
+    error.value = 'Помилка завантаження даних'
   } finally {
     loading.value = false
   }
@@ -68,7 +68,7 @@ async function loadWorkOrders() {
     workOrders.value = await getWorkOrders(filt)
   } catch (e) {
     console.error(e)
-    error.value = 'Не удалось загрузить заявки'
+    error.value = 'Не вдалося завантажити заявки'
   } finally {
     loading.value = false
   }
@@ -95,7 +95,7 @@ async function submitForm() {
     await loadWorkOrders()
   } catch (e) {
     console.error(e)
-    alert('Ошибка при создании заявки')
+    alert('Помилка під час створення заявки')
   }
 }
 
@@ -105,18 +105,18 @@ async function setStatus(id, status) {
     await loadWorkOrders()
   } catch (e) {
     console.error(e)
-    alert('Ошибка при изменении статуса')
+    alert('Помилка під час зміни статусу')
   }
 }
 
 async function remove(id) {
-  if (!confirm('Удалить заявку?')) return
+  if (!confirm('Видалити заявку?')) return
   try {
     await deleteWorkOrder(id)
     await loadWorkOrders()
   } catch (e) {
     console.error(e)
-    alert('Ошибка при удалении')
+    alert('Помилка під час видалення')
   }
 }
 
@@ -126,8 +126,8 @@ onMounted(async () => {
   try {
     await startConnection()
 
-    // На любое событие просто перезагружаем список.
-    // Это проще, чем вручную патчить массив.
+    // На будь-яку подію просто перезавантажуємо список.
+    // Це простіше, ніж вручну патчити масив.
     onWorkOrderCreated(async () => {
       await loadWorkOrders()
     })
@@ -149,14 +149,14 @@ onMounted(async () => {
 
     <div v-if="error" class="error">{{ error }}</div>
 
-    <!-- Фильтры -->
+    <!-- Фільтри -->
     <div class="card filters">
-      <h3>Фильтр</h3>
+      <h3>Фільтр</h3>
       <div class="filters-row">
         <label>
-          Самолёт
+          Літак
           <select v-model="filters.aircraftId">
-            <option value="">Все</option>
+            <option value="">Усі</option>
             <option v-for="a in aircraft" :key="a.id" :value="a.id">
               {{ a.tailNumber }} ({{ a.model }})
             </option>
@@ -166,7 +166,7 @@ onMounted(async () => {
         <label>
           Статус
           <select v-model="filters.status">
-            <option value="">Все</option>
+            <option value="">Усі</option>
             <option value="New">New</option>
             <option value="InProgress">InProgress</option>
             <option value="Done">Done</option>
@@ -175,26 +175,26 @@ onMounted(async () => {
         </label>
 
         <label>
-          Приоритет
+          Пріоритет
           <select v-model="filters.priority">
-            <option value="">Все</option>
+            <option value="">Усі</option>
             <option value="Low">Low</option>
             <option value="Medium">Medium</option>
             <option value="High">High</option>
           </select>
         </label>
 
-        <button @click="loadWorkOrders">Применить</button>
+        <button @click="loadWorkOrders">Застосувати</button>
       </div>
     </div>
 
-    <!-- Форма создания -->
+    <!-- Форма створення -->
     <form class="card form" @submit.prevent="submitForm">
-      <h3>Создать заявку</h3>
+      <h3>Створити заявку</h3>
 
       <template v-if="hasAircraft">
         <label>
-          Самолёт
+          Літак
           <select v-model="form.aircraftId">
             <option v-for="a in aircraft" :key="a.id" :value="a.id">
               {{ a.tailNumber }} ({{ a.model }})
@@ -203,24 +203,24 @@ onMounted(async () => {
         </label>
       </template>
       <p v-else class="hint">
-        Сначала добавьте хотя бы один самолёт на вкладке "Самолёты".
+        Спочатку додайте хоча б один літак на вкладці "Літаки".
       </p>
 
       <label>
-        Заголовок
-        <input v-model="form.title" placeholder="Например: Замена колеса" />
+        Назва
+        <input v-model="form.title" placeholder="Наприклад: Заміна колеса" />
       </label>
 
       <label>
-        Описание
+        Опис
         <textarea
           v-model="form.description"
-          placeholder="Кратко, что нужно сделать"
+          placeholder="Коротко, що потрібно зробити"
         />
       </label>
 
       <label>
-        Приоритет
+        Пріоритет
         <select v-model="form.priority">
           <option value="Low">Low</option>
           <option value="Medium">Medium</option>
@@ -230,29 +230,29 @@ onMounted(async () => {
 
       <div class="dates">
         <label>
-          Плановое начало
+          Плановий початок
           <input type="datetime-local" v-model="form.plannedStart" />
         </label>
         <label>
-          Плановое окончание
+          Планове завершення
           <input type="datetime-local" v-model="form.plannedEnd" />
         </label>
       </div>
 
-      <button type="submit" :disabled="!hasAircraft">Создать</button>
+      <button type="submit" :disabled="!hasAircraft">Створити</button>
     </form>
 
-    <!-- Таблица заявок -->
+    <!-- Таблиця заявок -->
     <div class="card table-card">
       <h3>Список заявок</h3>
-      <div v-if="loading">Загрузка...</div>
+      <div v-if="loading">Завантаження...</div>
       <table v-else>
         <thead>
           <tr>
             <th>ID</th>
-            <th>Самолёт</th>
-            <th>Заголовок</th>
-            <th>Приоритет</th>
+            <th>Літак</th>
+            <th>Назва</th>
+            <th>Пріоритет</th>
             <th>План</th>
             <th>Статус</th>
             <th />
@@ -281,19 +281,19 @@ onMounted(async () => {
             <td>{{ w.status }}</td>
             <td class="actions">
               <button @click="setStatus(w.id, 'InProgress')" v-if="w.status === 'New'">
-                В работу
+                У роботу
               </button>
               <button @click="setStatus(w.id, 'Done')" v-if="w.status === 'InProgress'">
-                Завершить
+                Завершити
               </button>
               <button @click="setStatus(w.id, 'Cancelled')" v-if="w.status !== 'Done'">
-                Отменить
+                Скасувати
               </button>
-              <button @click="remove(w.id)">Удалить</button>
+              <button @click="remove(w.id)">Видалити</button>
             </td>
           </tr>
           <tr v-if="workOrders.length === 0">
-            <td colspan="7">Заявок пока нет</td>
+            <td colspan="7">Наразі заявок немає</td>
           </tr>
         </tbody>
       </table>

@@ -8,10 +8,10 @@ var apiKey = builder.Configuration["Security:ApiKey"];
 if (string.IsNullOrWhiteSpace(apiKey))
     throw new InvalidOperationException("Security:ApiKey is missing in Aviation.Maintenance.Grpc");
 
-// Подключаем DbContext + доменные сервисы
+// Підключаємо DbContext + доменні сервіси
 builder.Services.AddMaintenanceInfrastructure(builder.Configuration);
 
-// Регистрируем gRPC
+// Реєструємо gRPC
 builder.Services.AddGrpc(o =>
 {
     o.Interceptors.Add<ApiKeyServerInterceptor>();
@@ -28,7 +28,7 @@ app.MapGrpcService<WorkOrderGrpcService>();
 app.MapGrpcHealthChecksService();
 app.MapGrpcReflectionService();
 
-// Просто для проверки через браузер
+// Просто для перевірки через браузер
 app.MapGet("/", () => "Aviation.Maintenance.Grpc is running (gRPC).");
 
 app.Run();

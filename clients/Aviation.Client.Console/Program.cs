@@ -9,7 +9,7 @@ class Program
     {
         Console.WriteLine("Aviation.Client.Console (gRPC)");
 
-        // адрес тот же, что ты указал в WebApi для WorkOrderServiceClient
+        // адреса та ж, яку ти вказав у WebApi для WorkOrderServiceClient
         var grpcAddress =
             args.FirstOrDefault(a => a.StartsWith("--grpc=", StringComparison.OrdinalIgnoreCase))?.Split('=', 2)[1]
             ?? Environment.GetEnvironmentVariable("GRPC_WORKORDERS_URL")

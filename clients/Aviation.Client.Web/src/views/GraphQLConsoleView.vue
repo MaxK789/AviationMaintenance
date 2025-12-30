@@ -46,7 +46,7 @@ async function execute() {
     if (!response.ok) {
       error.value = `HTTP ${response.status}`
     } else if (json.errors) {
-      error.value = 'GraphQL errors, см. результат'
+      error.value = 'GraphQL errors, див. результат'
     }
   } catch (e) {
     console.error(e)
@@ -61,12 +61,12 @@ async function execute() {
   <section class="graphql-console">
     <h2>GraphQL Console</h2>
     <p class="hint">
-      Здесь можно руками отправлять GraphQL-запросы на <code>/api/graphql</code>.
+      Тут можна вручну надсилати GraphQL-запити на <code>/api/graphql</code>.
     </p>
 
     <div class="panes">
       <div class="pane">
-        <h3>Запрос</h3>
+        <h3>Запит</h3>
         <textarea v-model="query" spellcheck="false" />
       </div>
       <div class="pane">
@@ -76,10 +76,10 @@ async function execute() {
     </div>
 
     <button @click="execute" :disabled="loading">
-      {{ loading ? 'Выполняю...' : 'Выполнить' }}
+      {{ loading ? 'Виконую...' : 'Виконати' }}
     </button>
 
-    <div v-if="error" class="error">Ошибка: {{ error }}</div>
+    <div v-if="error" class="error">Помилка: {{ error }}</div>
 
     <div class="result card">
       <h3>Результат</h3>

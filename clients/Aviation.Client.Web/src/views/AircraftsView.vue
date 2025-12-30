@@ -23,7 +23,7 @@ async function loadAircraft() {
     aircraft.value = await getAircraft()
   } catch (e) {
     console.error(e)
-    error.value = 'Не удалось загрузить самолёты'
+    error.value = 'Не вдалося завантажити літаки'
   } finally {
     loading.value = false
   }
@@ -40,18 +40,18 @@ async function submitForm() {
     await loadAircraft()
   } catch (e) {
     console.error(e)
-    alert('Ошибка при создании самолёта')
+    alert('Помилка під час створення літака')
   }
 }
 
 async function remove(id) {
-  if (!confirm('Удалить самолёт?')) return
+  if (!confirm('Видалити літак?')) return
   try {
     await deleteAircraft(id)
     await loadAircraft()
   } catch (e) {
     console.error(e)
-    alert('Ошибка при удалении')
+    alert('Помилка під час видалення')
   }
 }
 
@@ -60,14 +60,14 @@ onMounted(loadAircraft)
 
 <template>
   <section>
-    <h2>Самолёты</h2>
+    <h2>Літаки</h2>
 
     <div v-if="error" class="error">{{ error }}</div>
 
     <form class="card form" @submit.prevent="submitForm">
-      <h3>Добавить самолёт</h3>
+      <h3>Додати літак</h3>
       <label>
-        Бортовой номер
+        Бортовий номер
         <input v-model="form.tailNumber" placeholder="UR-XXX" />
       </label>
       <label>
@@ -77,17 +77,17 @@ onMounted(loadAircraft)
       <label>
         Статус
         <select v-model="form.status">
-          <option value="InService">В эксплуатации</option>
+          <option value="InService">В експлуатації</option>
           <option value="InMaintenance">На ТО</option>
-          <option value="OutOfService">Выведен</option>
+          <option value="OutOfService">Виведений</option>
         </select>
       </label>
-      <button type="submit">Сохранить</button>
+      <button type="submit">Зберегти</button>
     </form>
 
     <div class="card table-card">
-      <h3>Список самолётов</h3>
-      <div v-if="loading">Загрузка...</div>
+      <h3>Список літаків</h3>
+      <div v-if="loading">Завантаження...</div>
       <table v-else>
         <thead>
           <tr>
@@ -105,11 +105,11 @@ onMounted(loadAircraft)
             <td>{{ a.model }}</td>
             <td>{{ a.status }}</td>
             <td>
-              <button @click="remove(a.id)">Удалить</button>
+              <button @click="remove(a.id)">Видалити</button>
             </td>
           </tr>
           <tr v-if="aircraft.length === 0">
-            <td colspan="5">Пока нет самолётов</td>
+            <td colspan="5">Поки немає літаків</td>
           </tr>
         </tbody>
       </table>

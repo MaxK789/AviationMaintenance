@@ -61,7 +61,7 @@ public class WorkOrdersController : ControllerBase
 
         var response = await _client.ListWorkOrdersAsync(request, cancellationToken: ct);
 
-        // подгружаем данные по самолётам для красивого отображения
+        // підвантажуємо дані по літаках для зручного відображення
         var aircraftList = await _aircraftService.GetListAsync(null, ct);
         var aircraftDict = aircraftList.ToDictionary(a => a.Id, a => a);
 
@@ -178,7 +178,7 @@ public class WorkOrdersController : ControllerBase
         return NoContent();
     }
 
-    // ------------ SignalR-уведомления ------------
+    // ------------ SignalR-сповіщення ------------
 
     private Task NotifyCreated(WorkOrderDto dto, CancellationToken ct) =>
         _hubContext.Clients.Group(DispatchersGroup)
@@ -192,7 +192,7 @@ public class WorkOrdersController : ControllerBase
         _hubContext.Clients.Group(DispatchersGroup)
             .SendAsync("WorkOrderDeleted", id, ct);
 
-    // ------------ Маппинги ------------
+    // ------------ Мапінги ------------
 
     private static WorkOrderDto MapToDto(GrpcWorkOrderModel model, Aircraft? aircraft)
     {

@@ -19,10 +19,10 @@ using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Подключаем нашу инфраструктуру (DbContext + сервисы)
+// Підключаємо нашу інфраструктуру (DbContext + сервіси)
 builder.Services.AddMaintenanceInfrastructure(builder.Configuration);
 
-// Добавляем контроллеры и делаем enum'ы строками в JSON
+// Додаємо контролери та робимо enum'и рядками в JSON
 builder.Services
     .AddControllers()
     .AddJsonOptions(options =>
@@ -59,7 +59,7 @@ builder.Services.AddGrpcClient<WorkOrderService.WorkOrderServiceClient>((sp, o) 
 })
 .AddInterceptor<ApiKeyClientInterceptor>();
 
-// Чтобы 400 по валидации тоже было в формате ProblemDetails (и с traceId)
+// Щоб 400 по валідації теж було у форматі ProblemDetails (і з traceId)
 builder.Services.Configure<ApiBehaviorOptions>(o =>
 {
     o.InvalidModelStateResponseFactory = actionContext =>
@@ -92,7 +92,7 @@ builder.Services
         o.IncludeExceptionDetails = builder.Environment.IsDevelopment();
     });
 
-// Swagger (удобно для теста ЛР1)
+// Swagger (зручно для тесту ЛР1)
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -189,12 +189,12 @@ app.UseExceptionHandler(errorApp =>
     });
 });
 
-// ProblemDetails даже для “обычных” 404/401/403 без exception
+// ProblemDetails навіть для “звичайних” 404/401/403 без exception
 app.UseStatusCodePages(async statusCtx =>
 {
     var http = statusCtx.HttpContext;
 
-    // Если уже есть body — не трогаем
+    // Якщо вже є body — не чіпаємо
     if (http.Response.HasStarted) return;
 
     var status = http.Response.StatusCode;
@@ -214,7 +214,7 @@ app.UseStatusCodePages(async statusCtx =>
     await http.Response.WriteAsJsonAsync(pd);
 });
 
-// В dev включаем Swagger
+// У dev вмикаємо Swagger
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
