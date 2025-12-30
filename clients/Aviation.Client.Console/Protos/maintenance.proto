@@ -50,9 +50,9 @@ message GetWorkOrderResponse {
 }
 
 message ListWorkOrdersRequest {
-  int32 aircraft_id = 1;          // 0 = не фильтровать
-  WorkOrderStatus status = 2;     // UNKNOWN = не фильтровать
-  WorkOrderPriority priority = 3; // UNKNOWN = не фильтровать
+  int32 aircraft_id = 1;          // 0 = не фільтрувати
+  WorkOrderStatus status = 2;     // UNKNOWN = не фільтрувати
+  WorkOrderPriority priority = 3; // UNKNOWN = не фільтрувати
 }
 
 message ListWorkOrdersResponse {

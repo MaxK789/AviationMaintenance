@@ -39,7 +39,7 @@ export async function startConnection() {
   await connection.start()
   started = true
 
-  // присоединяемся как диспетчер
+  // приєднуємося як диспетчер
   await connection.invoke('JoinDispatchers')
 }
 

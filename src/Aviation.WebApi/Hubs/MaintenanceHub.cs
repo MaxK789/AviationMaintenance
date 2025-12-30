@@ -6,13 +6,13 @@ public class MaintenanceHub : Hub
 {
     private const string DispatchersGroup = "dispatchers";
 
-    // Все диспетчеры (таблица заявок) подписываются на эту группу
+    // Усі диспетчери (таблиця заявок) підписуються на цю групу
     public async Task JoinDispatchers()
     {
         await Groups.AddToGroupAsync(Context.ConnectionId, DispatchersGroup);
     }
 
-    // По желанию: подписка на конкретный самолёт
+    // За бажанням: підписка на конкретний літак
     public async Task JoinAircraftGroup(int aircraftId)
     {
         await Groups.AddToGroupAsync(Context.ConnectionId, $"aircraft-{aircraftId}");
