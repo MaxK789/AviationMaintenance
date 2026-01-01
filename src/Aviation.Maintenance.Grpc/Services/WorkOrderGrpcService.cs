@@ -86,53 +86,74 @@ public sealed class WorkOrderGrpcService : WorkOrderService.WorkOrderServiceBase
         CreateWorkOrderRequest request,
         ServerCallContext context)
     {
-        var entity = await _workOrders.CreateAsync(
-            request.AircraftId,
-            request.Title,
-            string.IsNullOrWhiteSpace(request.Description) ? null : request.Description,
-            request.Priority.ToDomainPriority(),
-            request.PlannedStart.ToNullableDateTime(),
-            request.PlannedEnd.ToNullableDateTime(),
-            context.CancellationToken);
-
-        return new CreateWorkOrderResponse
+        try
         {
-            WorkOrder = MapToModel(entity)
-        };
+            var entity = await _workOrders.CreateAsync(
+                request.AircraftId,
+                request.Title,
+                string.IsNullOrWhiteSpace(request.Description) ? null : request.Description,
+                request.Priority.ToDomainPriority(),
+                request.PlannedStart.ToNullableDateTime(),
+                request.PlannedEnd.ToNullableDateTime(),
+                context.CancellationToken);
+
+            return new CreateWorkOrderResponse
+            {
+                WorkOrder = MapToModel(entity)
+            };
+        }
+        catch (InvalidOperationException ex)
+        {
+            throw NotFound(ex);
+        }
     }
 
     public override async Task<UpdateWorkOrderResponse> UpdateWorkOrder(
         UpdateWorkOrderRequest request,
         ServerCallContext context)
     {
-        var entity = await _workOrders.UpdateAsync(
-            request.Id,
-            request.Title,
-            string.IsNullOrWhiteSpace(request.Description) ? null : request.Description,
-            request.Priority.ToDomainPriority(),
-            request.PlannedStart.ToNullableDateTime(),
-            request.PlannedEnd.ToNullableDateTime(),
-            context.CancellationToken);
-
-        return new UpdateWorkOrderResponse
+        try
         {
-            WorkOrder = MapToModel(entity)
-        };
+            var entity = await _workOrders.UpdateAsync(
+                request.Id,
+                request.Title,
+                string.IsNullOrWhiteSpace(request.Description) ? null : request.Description,
+                request.Priority.ToDomainPriority(),
+                request.PlannedStart.ToNullableDateTime(),
+                request.PlannedEnd.ToNullableDateTime(),
+                context.CancellationToken);
+
+            return new UpdateWorkOrderResponse
+            {
+                WorkOrder = MapToModel(entity)
+            };
+        }
+        catch (InvalidOperationException ex)
+        {
+            throw NotFound(ex);
+        }
     }
 
     public override async Task<ChangeWorkOrderStatusResponse> ChangeWorkOrderStatus(
         ChangeWorkOrderStatusRequest request,
         ServerCallContext context)
     {
-        var entity = await _workOrders.ChangeStatusAsync(
-            request.Id,
-            request.NewStatus.ToDomainStatus(),
-            context.CancellationToken);
-
-        return new ChangeWorkOrderStatusResponse
+        try
         {
-            WorkOrder = MapToModel(entity)
-        };
+            var entity = await _workOrders.ChangeStatusAsync(
+                request.Id,
+                request.NewStatus.ToDomainStatus(),
+                context.CancellationToken);
+
+            return new ChangeWorkOrderStatusResponse
+            {
+                WorkOrder = MapToModel(entity)
+            };
+        }
+        catch (InvalidOperationException ex)
+        {
+            throw NotFound(ex);
+        }
     }
 
     public override async Task<DeleteWorkOrderResponse> DeleteWorkOrder(
@@ -142,6 +163,9 @@ public sealed class WorkOrderGrpcService : WorkOrderService.WorkOrderServiceBase
         await _workOrders.DeleteAsync(request.Id, context.CancellationToken);
         return new DeleteWorkOrderResponse();
     }
+
+    private static RpcException NotFound(InvalidOperationException ex) =>
+        new(new Status(StatusCode.NotFound, ex.Message));
 
     private static WorkOrderModel MapToModel(Aviation.Maintenance.Domain.Entities.WorkOrder entity)
     {
