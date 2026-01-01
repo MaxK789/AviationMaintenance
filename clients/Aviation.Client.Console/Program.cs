@@ -37,28 +37,39 @@ class Program
             Console.Write("Select: ");
             var input = Console.ReadLine();
 
-            switch (input)
+            try
             {
-                case "1":
-                    await ListWorkOrders(client, headers);
-                    break;
-                case "2":
-                    await CreateWorkOrder(client, headers);
-                    break;
-                case "3":
-                    await ChangeStatus(client, headers);
-                    break;
-                case "4":
-                    await DeleteWorkOrder(client, headers);
-                    break;
-                case "5":
-                    await WatchWorkOrders(client, headers);
-                    break;
-                case "0":
-                    return;
-                default:
-                    Console.WriteLine("Unknown option");
-                    break;
+                switch (input)
+                {
+                    case "1":
+                        await ListWorkOrders(client, headers);
+                        break;
+                    case "2":
+                        await CreateWorkOrder(client, headers);
+                        break;
+                    case "3":
+                        await ChangeStatus(client, headers);
+                        break;
+                    case "4":
+                        await DeleteWorkOrder(client, headers);
+                        break;
+                    case "5":
+                        await WatchWorkOrders(client, headers);
+                        break;
+                    case "0":
+                        return;
+                    default:
+                        Console.WriteLine("Unknown option");
+                        break;
+                }
+            }
+            catch (RpcException ex)
+            {
+                Console.WriteLine($"gRPC error [{ex.StatusCode}]: {ex.Status.Detail}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Unexpected error: {ex.Message}");
             }
         }
     }
