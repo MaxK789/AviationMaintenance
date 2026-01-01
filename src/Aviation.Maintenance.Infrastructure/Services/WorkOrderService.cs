@@ -54,6 +54,10 @@ public class WorkOrderService : IWorkOrderService
         DateTime? plannedEnd,
         CancellationToken cancellationToken = default)
     {
+        var aircraftExists = await _db.Aircraft.AnyAsync(a => a.Id == aircraftId, cancellationToken);
+        if (!aircraftExists)
+            throw new InvalidOperationException($"Aircraft {aircraftId} not found");
+
         var entity = new WorkOrder
         {
             AircraftId = aircraftId,
