@@ -50,8 +50,11 @@ public static class WorkOrderMappings
             ? Timestamp.FromDateTime(DateTime.SpecifyKind(dt.Value, DateTimeKind.Utc))
             : Timestamp.FromDateTime(DateTime.SpecifyKind(DateTime.UnixEpoch, DateTimeKind.Utc));
 
-    public static DateTime? ToNullableDateTime(this Timestamp ts)
+    public static DateTime? ToNullableDateTime(this Timestamp? ts)
     {
+        if (ts is null)
+            return null;
+
         var dt = ts.ToDateTime();
         return dt == DateTime.UnixEpoch ? null : dt;
     }
